@@ -233,6 +233,28 @@
                                     }
                                 </div>
                             }
+
+                            <!-- Add to Library Buttons -->
+                            <div class="add-to-library-buttons">
+                                <button type="button" class="btn btn-sm btn-wishlist add-btn" 
+                                        data-game-id="@game.Id" data-game-slug="@game.Slug" 
+                                        data-game-name="@game.Name" data-game-image="@game.BackgroundImage"
+                                        data-status="Wishlist" title="Add to Wishlist">
+                                    🎯 Wishlist
+                                </button>
+                                <button type="button" class="btn btn-sm btn-backlog add-btn" 
+                                        data-game-id="@game.Id" data-game-slug="@game.Slug" 
+                                        data-game-name="@game.Name" data-game-image="@game.BackgroundImage"
+                                        data-status="Backlog" title="Add to Backlog">
+                                    📋 Backlog
+                                </button>
+                                <button type="button" class="btn btn-sm btn-played add-btn" 
+                                        data-game-id="@game.Id" data-game-slug="@game.Slug" 
+                                        data-game-name="@game.Name" data-game-image="@game.BackgroundImage"
+                                        data-status="Played" title="Mark as Played">
+                                    ✓ Played
+                                </button>
+                            </div>
                         </div>
                     </div>
                 }
@@ -291,8 +313,8 @@
         max-width: 1200px;
         margin: 2rem auto;
         padding: 2rem;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
         border-radius: 12px;
     }
 
@@ -305,22 +327,21 @@
         font-size: 2.5rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
-        color: #00d4ff;
-        text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        color: var(--accent-primary);
     }
 
     .step-indicator {
         font-size: 1.1rem;
-        color: #888;
+        color: var(--text-secondary);
         font-weight: 600;
         letter-spacing: 1px;
     }
 
     .search-form {
-        background: rgba(255, 255, 255, 0.03);
+        background-color: var(--bg-secondary);
         padding: 2rem;
         border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
     }
 
     .form-group label {
@@ -328,7 +349,7 @@
         font-weight: 600;
         margin-bottom: 1.5rem;
         display: block;
-        color: #e0e0e0;
+        color: var(--text-primary);
     }
 
     .options-grid {
@@ -347,10 +368,9 @@
     }
 
     .option-card .btn-check:checked + .btn {
-        background-color: #00d4ff;
-        border-color: #00d4ff;
-        color: #000;
-        box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        background-color: var(--accent-primary);
+        border-color: var(--accent-primary);
+        color: white;
     }
 
     .button-group {
@@ -372,9 +392,8 @@
 
     .results-section h2 {
         font-size: 1.8rem;
-        color: #00d4ff;
+        color: var(--accent-primary);
         margin-bottom: 2rem;
-        text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
     }
 
     .results-grid {
@@ -385,8 +404,8 @@
     }
 
     .game-card {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--card-border);
         border-radius: 8px;
         overflow: hidden;
         transition: all 0.3s ease;
@@ -394,8 +413,8 @@
     }
 
     .game-card:hover {
-        border-color: #00d4ff;
-        box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 12px var(--shadow-light);
         transform: translateY(-4px);
     }
 
@@ -409,11 +428,11 @@
     }
 
     .game-image.no-image {
-        background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 150, 200, 0.1));
+        background-color: var(--bg-tertiary);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #00d4ff;
+        color: var(--accent-primary);
         font-weight: 600;
     }
 
@@ -425,7 +444,7 @@
         font-size: 1.2rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
-        color: #e0e0e0;
+        color: var(--text-primary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -433,13 +452,13 @@
 
     .release-date {
         font-size: 0.9rem;
-        color: #aaa;
+        color: var(--text-secondary);
         margin-bottom: 0.5rem;
     }
 
     .rating {
         font-size: 0.95rem;
-        color: #ffd700;
+        color: #ffc107;
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
@@ -459,16 +478,16 @@
     .platforms,
     .stores {
         font-size: 0.9rem;
-        color: #aaa;
+        color: var(--text-secondary);
         margin-bottom: 0.5rem;
     }
 
     .platform-badge,
     .store-badge {
         display: inline-block;
-        background: rgba(0, 212, 255, 0.15);
-        border: 1px solid rgba(0, 212, 255, 0.3);
-        color: #00d4ff;
+        background-color: transparent;
+        border: 1px solid var(--accent-primary);
+        color: var(--accent-primary);
         padding: 0.3rem 0.6rem;
         border-radius: 4px;
         font-size: 0.8rem;
@@ -488,7 +507,7 @@
 
     .loading-state p {
         margin-top: 1rem;
-        color: #aaa;
+        color: var(--text-secondary);
     }
 
     .pagination-controls {
@@ -500,8 +519,57 @@
     }
 
     .page-info {
-        color: #aaa;
+        color: var(--text-secondary);
         font-weight: 600;
+    }
+
+    .add-to-library-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .add-to-library-buttons .btn {
+        flex: 1;
+        min-width: 90px;
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+        font-weight: 600;
+        border: 1px solid;
+        transition: all 0.3s ease;
+    }
+
+    .btn-wishlist {
+        background-color: transparent;
+        color: var(--accent-primary);
+        border-color: var(--accent-primary);
+    }
+
+    .btn-wishlist:hover {
+        background-color: rgba(0, 102, 204, 0.1);
+    }
+
+    .btn-backlog {
+        background-color: transparent;
+        color: #d4a017;
+        border-color: #d4a017;
+    }
+
+    .btn-backlog:hover {
+        background-color: rgba(212, 160, 23, 0.1);
+    }
+
+    .btn-played {
+        background-color: transparent;
+        color: #4caf50;
+        border-color: #4caf50;
+    }
+
+    .btn-played:hover {
+        background-color: rgba(76, 175, 80, 0.1);
     }
 
     @@media (max-width: 768px) {
@@ -526,3 +594,86 @@
         }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const csrfToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        const searchContainer = document.querySelector('.search-container');
+
+        // Handle add to library buttons
+        document.querySelectorAll('.add-btn').forEach(button => {
+            button.addEventListener('click', async function (e) {
+                e.preventDefault();
+
+                const gameId = parseInt(this.dataset.gameId);
+                const gameSlug = this.dataset.gameSlug;
+                const gameName = this.dataset.gameName;
+                const gameImage = this.dataset.gameImage;
+                const status = this.dataset.status;
+
+                // Disable button while processing
+                this.disabled = true;
+                const originalText = this.textContent;
+                this.textContent = '⏳ Adding...';
+
+                try {
+                    const response = await fetch('@Url.Action("AddToLibrary", "GameLibrary")', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            gameId: gameId,
+                            gameSlug: gameSlug,
+                            gameName: gameName,
+                            gameImageUrl: gameImage,
+                            status: status
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showNotification(data.message, 'success');
+                        this.disabled = true;
+                        this.textContent = '✓ Added';
+                        this.classList.add('btn-success');
+                        this.classList.remove('btn-wishlist', 'btn-backlog', 'btn-played');
+                    } else {
+                        showNotification(data.message, 'warning');
+                        this.disabled = false;
+                        this.textContent = originalText;
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showNotification('Error adding game to library', 'error');
+                    this.disabled = false;
+                    this.textContent = originalText;
+                }
+            });
+        });
+
+        // Show notification
+        function showNotification(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.role = 'alert';
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '9999';
+            alertDiv.style.maxWidth = '400px';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+    });
+</script>

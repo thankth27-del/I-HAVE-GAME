@@ -26,7 +26,7 @@
 <style>
     .auth-container {
         min-height: 100vh;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        background-color: var(--bg-primary);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -34,13 +34,13 @@
     }
 
     .auth-card {
-        background: #0f3460;
-        border: 2px solid #ff006e;
+        background-color: var(--card-bg);
+        border: 1px solid #e74c3c;
         border-radius: 12px;
         padding: 40px;
         width: 100%;
         max-width: 450px;
-        box-shadow: 0 20px 60px rgba(255, 0, 110, 0.3);
+        box-shadow: 0 2px 8px var(--shadow-light);
     }
 
     .auth-header {
@@ -49,14 +49,14 @@
     }
 
     .auth-title {
-        color: #ff006e;
+        color: #e74c3c;
         font-size: 28px;
         font-weight: bold;
         margin-bottom: 8px;
     }
 
     .auth-subtitle {
-        color: #ff6b9d;
+        color: var(--text-secondary);
         font-size: 14px;
         margin: 0;
     }
@@ -66,7 +66,7 @@
     }
 
     .access-denied-message {
-        color: #c77dff;
+        color: var(--text-primary);
         font-size: 14px;
         line-height: 1.6;
         margin: 20px 0 30px 0;
@@ -92,24 +92,24 @@
     }
 
     .btn-primary {
-        background-color: #7b2cbf;
-        color: #f0f0f0;
+        background-color: var(--accent-primary);
+        color: white;
     }
 
     .btn-primary:hover {
-        background-color: #c77dff;
-        color: #1a1a2e;
-        box-shadow: 0 0 20px rgba(199, 125, 255, 0.5);
+        background-color: var(--accent-primary-hover);
+        color: white;
     }
 
     .btn-secondary {
-        background-color: #16213e;
-        color: #c77dff;
-        border: 1px solid #7b2cbf;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
     }
 
     .btn-secondary:hover {
-        background-color: #7b2cbf;
-        color: #f0f0f0;
+        background-color: var(--border-color);
+        color: var(--text-primary);
     }
+</style>
 </style>
