@@ -11,6 +11,7 @@ namespace I_HAVE_GAME.Models
         public required string Status { get; set; }
         public int? Rating { get; set; }
         public string? Review { get; set; }
+        public string? Genre { get; set; } // Comma-separated genre names from RAWG
         public DateTime AddedAt { get; set; }
 
         // Foreign key and navigation property

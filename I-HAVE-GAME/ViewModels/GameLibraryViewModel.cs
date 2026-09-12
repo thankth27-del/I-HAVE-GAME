@@ -29,6 +29,7 @@ namespace I_HAVE_GAME.ViewModels
         public string Status { get; set; } = string.Empty;
         public int? Rating { get; set; }
         public string? Review { get; set; }
+        public string? Genre { get; set; } // Comma-separated genre names
         public DateTime AddedAt { get; set; }
     }
 
@@ -42,6 +43,7 @@ namespace I_HAVE_GAME.ViewModels
         public required string GameName { get; set; }
         public string? GameImageUrl { get; set; }
         public required string Status { get; set; } // Wishlist, Backlog, Played
+        public string? Genre { get; set; } // Comma-separated genre names from RAWG
     }
 
     /// <summary>

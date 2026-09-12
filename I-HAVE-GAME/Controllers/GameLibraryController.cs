@@ -116,6 +116,7 @@ namespace I_HAVE_GAME.Controllers
                     GameName = request.GameName,
                     GameImageUrl = request.GameImageUrl,
                     Status = request.Status,
+                    Genre = request.Genre, // Store genre data from request
                     AddedAt = DateTime.UtcNow
                 };
 
@@ -302,6 +303,7 @@ namespace I_HAVE_GAME.Controllers
                 Status = item.Status,
                 Rating = item.Rating,
                 Review = item.Review,
+                Genre = item.Genre,
                 AddedAt = item.AddedAt
             };
         }
