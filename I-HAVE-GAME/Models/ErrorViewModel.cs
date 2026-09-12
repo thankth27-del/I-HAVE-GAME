@@ -5,5 +5,9 @@ namespace I_HAVE_GAME.Models
         public string? RequestId { get; set; }
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+        public string? Message { get; set; }
+
+        public string? Details { get; set; }
     }
 }

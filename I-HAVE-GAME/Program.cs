@@ -1,4 +1,6 @@
 using I_HAVE_GAME.Data;
+using I_HAVE_GAME.Models.Rawg;
+using I_HAVE_GAME.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,16 @@ builder.Services.AddControllersWithViews();
 // Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configure RAWG API options
+builder.Services.Configure<RawgOptions>(builder.Configuration.GetSection("Rawg"));
+
+// Register HttpClient for RAWG service with timeout
+builder.Services.AddHttpClient<IRawgService, RawgService>()
+    .ConfigureHttpClient(client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(30);
+    });
 
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
