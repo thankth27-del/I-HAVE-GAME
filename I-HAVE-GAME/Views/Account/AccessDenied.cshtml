@@ -1,0 +1,115 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Access Denied</h1>
+            <p class="auth-subtitle">You don't have permission to access this resource</p>
+        </div>
+
+        <div class="access-denied-content">
+            <p class="access-denied-message">
+                It looks like you don't have the required permissions to view this page. 
+                If you believe this is an error, please contact an administrator.
+            </p>
+
+            <div class="action-buttons">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Return to Dashboard</a>
+                <a href="@Url.Action("Logout", "Account")" class="btn btn-secondary">Sign Out</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .auth-card {
+        background: #0f3460;
+        border: 2px solid #ff006e;
+        border-radius: 12px;
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        box-shadow: 0 20px 60px rgba(255, 0, 110, 0.3);
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .auth-title {
+        color: #ff006e;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+        color: #ff6b9d;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .access-denied-content {
+        text-align: center;
+    }
+
+    .access-denied-message {
+        color: #c77dff;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 20px 0 30px 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background-color: #7b2cbf;
+        color: #f0f0f0;
+    }
+
+    .btn-primary:hover {
+        background-color: #c77dff;
+        color: #1a1a2e;
+        box-shadow: 0 0 20px rgba(199, 125, 255, 0.5);
+    }
+
+    .btn-secondary {
+        background-color: #16213e;
+        color: #c77dff;
+        border: 1px solid #7b2cbf;
+    }
+
+    .btn-secondary:hover {
+        background-color: #7b2cbf;
+        color: #f0f0f0;
+    }
+</style>

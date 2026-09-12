@@ -1,0 +1,192 @@
+@model OnboardingViewModel
+
+@{
+    ViewData["Title"] = "Complete Your Profile";
+}
+
+<div class="onboarding-container">
+    <div class="onboarding-card">
+        <div class="onboarding-header">
+            <h1 class="onboarding-title">Complete Your Profile</h1>
+            <p class="onboarding-subtitle">Let's set up your gaming profile</p>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+
+        <form method="post" asp-action="Index" asp-controller="Onboarding" class="onboarding-form">
+            @{
+                if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(x => x.Errors.Count > 0))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            @foreach (var error in modelState.Errors)
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        }
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+            }
+
+            <div class="form-group">
+                <label asp-for="Nickname" class="form-label">Nickname (Display Name)</label>
+                <input asp-for="Nickname" class="form-control" placeholder="What should we call you?" maxlength="50">
+                <small class="form-text text-muted">This is how other players will see you</small>
+                <span asp-validation-for="Nickname" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MainDevice" class="form-label">Primary Gaming Device</label>
+                <select asp-for="MainDevice" class="form-select">
+                    <option value="">Select your main device (optional)</option>
+                    @foreach (var device in OnboardingViewModel.DeviceOptions)
+                    {
+                        <option value="@device">@device</option>
+                    }
+                </select>
+                <small class="form-text text-muted">You can change this anytime in your settings</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-lg">Continue to Dashboard</button>
+        </form>
+
+        <div class="onboarding-footer">
+            <p>You can update this information later in your profile settings</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .onboarding-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .onboarding-card {
+        background: #0f3460;
+        border: 2px solid #7b2cbf;
+        border-radius: 12px;
+        padding: 40px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 20px 60px rgba(123, 44, 191, 0.3);
+    }
+
+    .onboarding-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .onboarding-title {
+        color: #e0aaff;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .onboarding-subtitle {
+        color: #c77dff;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .onboarding-form .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        color: #e0aaff;
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 14px;
+        display: block;
+    }
+
+    .form-control,
+    .form-select {
+        background-color: #1a1a2e;
+        border: 1px solid #7b2cbf;
+        color: #e0aaff;
+        padding: 12px 15px;
+        border-radius: 6px;
+        font-size: 14px;
+        width: 100%;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: #1a1a2e;
+        border-color: #c77dff;
+        color: #e0aaff;
+        box-shadow: 0 0 0 0.2rem rgba(123, 44, 191, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: #7b2cbf;
+    }
+
+    .form-select option {
+        background-color: #1a1a2e;
+        color: #e0aaff;
+    }
+
+    .form-text {
+        color: #7b2cbf !important;
+        font-size: 12px !important;
+        margin-top: 6px;
+        display: block;
+    }
+
+    .text-danger {
+        color: #ff006e;
+        display: block;
+        margin-top: 4px;
+    }
+
+    .btn-primary {
+        background-color: #7b2cbf;
+        border: none;
+        color: #f0f0f0;
+        font-weight: 600;
+        padding: 12px 20px;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #c77dff;
+        color: #1a1a2e;
+        box-shadow: 0 0 20px rgba(199, 125, 255, 0.5);
+    }
+
+    .onboarding-footer {
+        text-align: center;
+        margin-top: 20px;
+        color: #7b2cbf;
+        font-size: 12px;
+    }
+
+    .progress {
+        background-color: #1a1a2e;
+        border-radius: 3px;
+    }
+
+    .alert {
+        border-radius: 6px;
+        border: 1px solid #ff006e;
+        background-color: rgba(255, 0, 110, 0.1);
+        color: #ff006e;
+        margin-bottom: 20px;
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

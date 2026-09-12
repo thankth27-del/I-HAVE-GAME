@@ -1,0 +1,184 @@
+@model RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Join I-HAVE-GAME</h1>
+            <p class="auth-subtitle">Create your account to get started</p>
+        </div>
+
+        <form method="post" asp-action="Register" asp-controller="Account" class="auth-form">
+            @{
+                if (ViewBag.ErrorMessage != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @ViewBag.ErrorMessage
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+            }
+
+            <div class="form-group">
+                <label asp-for="Username" class="form-label">Username</label>
+                <input asp-for="Username" class="form-control" placeholder="Choose your username">
+                <span asp-validation-for="Username" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" placeholder="your@email.com">
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="form-label">Password</label>
+                <input asp-for="Password" class="form-control" placeholder="At least 6 characters">
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm your password">
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-lg">Create Account</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a asp-action="Login" asp-controller="Account">Sign in</a></p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .auth-card {
+        background: #0f3460;
+        border: 2px solid #7b2cbf;
+        border-radius: 12px;
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        box-shadow: 0 20px 60px rgba(123, 44, 191, 0.3);
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .auth-title {
+        color: #e0aaff;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+        color: #c77dff;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .auth-form .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-label {
+        color: #e0aaff;
+        font-weight: 500;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-control {
+        background-color: #1a1a2e;
+        border: 1px solid #7b2cbf;
+        color: #e0aaff;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        background-color: #1a1a2e;
+        border-color: #c77dff;
+        color: #e0aaff;
+        box-shadow: 0 0 0 0.2rem rgba(123, 44, 191, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: #7b2cbf;
+    }
+
+    .text-danger {
+        color: #ff006e;
+        display: block;
+        margin-top: 4px;
+    }
+
+    .btn-primary {
+        background-color: #7b2cbf;
+        border: none;
+        color: #f0f0f0;
+        font-weight: 600;
+        padding: 12px 20px;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #c77dff;
+        color: #1a1a2e;
+        box-shadow: 0 0 20px rgba(199, 125, 255, 0.5);
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 20px;
+        border-top: 1px solid #7b2cbf;
+        padding-top: 20px;
+    }
+
+    .auth-footer p {
+        color: #c77dff;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .auth-footer a {
+        color: #e0aaff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .auth-footer a:hover {
+        color: #c77dff;
+        text-decoration: underline;
+    }
+
+    .alert {
+        border-radius: 6px;
+        border: 1px solid #ff006e;
+        background-color: rgba(255, 0, 110, 0.1);
+        color: #ff006e;
+        margin-bottom: 20px;
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

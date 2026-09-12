@@ -1,0 +1,213 @@
+@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">I-HAVE-GAME</h1>
+            <p class="auth-subtitle">Sign in to your account</p>
+        </div>
+
+        <form method="post" asp-action="Login" asp-controller="Account" class="auth-form">
+            @{
+                if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(x => x.Errors.Count > 0))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            @foreach (var error in modelState.Errors)
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        }
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+            }
+
+            <div class="form-group">
+                <label asp-for="UsernameOrEmail" class="form-label">Username or Email</label>
+                <input asp-for="UsernameOrEmail" class="form-control" placeholder="Enter username or email">
+                <span asp-validation-for="UsernameOrEmail" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="form-label">Password</label>
+                <input asp-for="Password" class="form-control" placeholder="Enter your password">
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="rememberMe" asp-for="RememberMe">
+                <label class="form-check-label" for="rememberMe">
+                    Remember me for 30 days
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-lg">Sign In</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a asp-action="Register" asp-controller="Account">Create one now</a></p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .auth-card {
+        background: #0f3460;
+        border: 2px solid #7b2cbf;
+        border-radius: 12px;
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        box-shadow: 0 20px 60px rgba(123, 44, 191, 0.3);
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .auth-title {
+        color: #e0aaff;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+        color: #c77dff;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .auth-form .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-label {
+        color: #e0aaff;
+        font-weight: 500;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-control {
+        background-color: #1a1a2e;
+        border: 1px solid #7b2cbf;
+        color: #e0aaff;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        background-color: #1a1a2e;
+        border-color: #c77dff;
+        color: #e0aaff;
+        box-shadow: 0 0 0 0.2rem rgba(123, 44, 191, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: #7b2cbf;
+    }
+
+    .form-check {
+        color: #c77dff;
+        font-size: 14px;
+    }
+
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        border: 1px solid #7b2cbf;
+        background-color: #1a1a2e;
+    }
+
+    .form-check-input:checked {
+        background-color: #7b2cbf;
+        border-color: #7b2cbf;
+    }
+
+    .form-check-input:focus {
+        border-color: #c77dff;
+        box-shadow: 0 0 0 0.2rem rgba(123, 44, 191, 0.25);
+    }
+
+    .form-check-label {
+        cursor: pointer;
+        margin-left: 8px;
+    }
+
+    .text-danger {
+        color: #ff006e;
+        display: block;
+        margin-top: 4px;
+    }
+
+    .btn-primary {
+        background-color: #7b2cbf;
+        border: none;
+        color: #f0f0f0;
+        font-weight: 600;
+        padding: 12px 20px;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #c77dff;
+        color: #1a1a2e;
+        box-shadow: 0 0 20px rgba(199, 125, 255, 0.5);
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 20px;
+        border-top: 1px solid #7b2cbf;
+        padding-top: 20px;
+    }
+
+    .auth-footer p {
+        color: #c77dff;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .auth-footer a {
+        color: #e0aaff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .auth-footer a:hover {
+        color: #c77dff;
+        text-decoration: underline;
+    }
+
+    .alert {
+        border-radius: 6px;
+        border: 1px solid #ff006e;
+        background-color: rgba(255, 0, 110, 0.1);
+        color: #ff006e;
+        margin-bottom: 20px;
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
