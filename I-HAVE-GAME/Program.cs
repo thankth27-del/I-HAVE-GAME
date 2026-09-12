@@ -32,6 +32,9 @@ builder.Services.AddHttpClient<IRawgService, RawgService>()
         client.Timeout = TimeSpan.FromSeconds(30);
     });
 
+// Register RecommendationService
+builder.Services.AddScoped<RecommendationService>();
+
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
