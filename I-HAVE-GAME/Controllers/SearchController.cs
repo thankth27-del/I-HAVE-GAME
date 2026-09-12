@@ -1,8 +1,10 @@
 using I_HAVE_GAME.Services;
 using I_HAVE_GAME.ViewModels;
 using I_HAVE_GAME.Models;
+using I_HAVE_GAME.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace I_HAVE_GAME.Controllers
 {
@@ -11,11 +13,13 @@ namespace I_HAVE_GAME.Controllers
     {
         private readonly IRawgService _rawgService;
         private readonly ILogger<SearchController> _logger;
+        private readonly AppDbContext _dbContext;
 
-        public SearchController(IRawgService rawgService, ILogger<SearchController> logger)
+        public SearchController(IRawgService rawgService, ILogger<SearchController> logger, AppDbContext dbContext)
         {
             _rawgService = rawgService;
             _logger = logger;
+            _dbContext = dbContext;
         }
 
         /// <summary>
@@ -285,6 +289,16 @@ namespace I_HAVE_GAME.Controllers
                     viewModel.WarningMessage = "No games found matching your criteria. Try adjusting your selections.";
                 }
 
+                // Save search history for this user
+                await SaveSearchHistoryAsync(
+                    genre: request.SelectedGenre == "" ? null : request.SelectedGenre,
+                    device: request.SelectedDevice == "" ? null : request.SelectedDevice,
+                    playMode: request.SelectedPlayMode == "" ? null : request.SelectedPlayMode,
+                    budget: request.SelectedBudget == "" ? null : request.SelectedBudget,
+                    era: request.SelectedEra == "" ? null : request.SelectedEra,
+                    resultCount: viewModel.Results.Count
+                );
+
                 return View("Index", viewModel);
             }
             catch (Exception ex)
@@ -315,6 +329,44 @@ namespace I_HAVE_GAME.Controllers
                 Stores = g.Stores?.Where(s => s.Store != null).Select(s => s.Store!.Name).ToList() ?? new List<string>(),
                 Description = g.DescriptionRaw
             }).ToList();
+        }
+
+        /// <summary>
+        /// Save search history for the current user
+        /// </summary>
+        private async Task SaveSearchHistoryAsync(string? genre, string? device, string? playMode, string? budget, string? era, int resultCount)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (!int.TryParse(userIdClaim?.Value, out var userId))
+                {
+                    _logger.LogWarning("Unable to extract UserId from claims for search history");
+                    return;
+                }
+
+                var searchHistory = new SearchHistory
+                {
+                    UserId = userId,
+                    Genre = genre,
+                    Device = device,
+                    PlayMode = playMode,
+                    Budget = budget,
+                    Era = era,
+                    ResultCount = resultCount,
+                    SearchedAt = DateTime.UtcNow
+                };
+
+                _dbContext.SearchHistories.Add(searchHistory);
+                await _dbContext.SaveChangesAsync();
+
+                _logger.LogInformation("Search history saved for user {UserId} with {ResultCount} results.", userId, resultCount);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving search history");
+                // Don't throw - let the search continue even if history logging fails
+            }
         }
     }
 }
