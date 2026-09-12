@@ -1,0 +1,299 @@
+@model I_HAVE_GAME.ViewModels.CompareGamesViewModel
+
+@{
+    ViewData["Title"] = "Compare Games";
+}
+
+<div class="container-fluid py-5">
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-10">
+            <h1 class="display-5 fw-bold mb-2">
+                <i class="fas fa-code-compare" style="color: #2D5A8C;"></i> Compare Games
+            </h1>
+            <p class="lead text-muted">
+                Search for games and compare them side-by-side to see detailed differences
+            </p>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-10">
+            <div class="card" style="background-color: var(--bg-secondary); border: 1px solid var(--border-light);">
+                <div class="card-body">
+                    <form asp-action="Index" method="get" class="form">
+                        <div class="input-group input-group-lg">
+                            <input type="text"
+                                   name="search"
+                                   class="form-control"
+                                   placeholder="Search for games..."
+                                   value="@Context.Request.Query["search"]"
+                                   style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-light);">
+                            <button class="btn btn-primary" type="submit"
+                                    style="background-color: var(--accent-primary); border-color: var(--accent-primary);">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            Enter a game title to search (e.g., "Elden Ring", "The Witcher 3")
+                        </small>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Alert -->
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-10">
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="fas fa-info-circle"></i> @Model.Message
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Search Results Grid -->
+    @if (Model.SearchResults.Any())
+    {
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="mb-4">
+                    <h4 class="mb-3">
+                        Found @Model.SearchResults.Count game(s) - Select 2 to 3 games to compare
+                    </h4>
+
+                    <form asp-action="Compare" asp-controller="Compare" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="games-grid-search">
+                            @foreach (var game in Model.SearchResults)
+                            {
+                                <div class="game-card-selectable">
+                                    <input type="checkbox"
+                                           name="selectedGameIds"
+                                           value="@game.GameId"
+                                           class="game-checkbox"
+                                           id="game-@game.GameId" />
+                                    <label for="game-@game.GameId" class="game-card-label">
+                                        <div class="game-card-image-wrapper">
+                                            @if (!string.IsNullOrEmpty(game.BackgroundImage))
+                                            {
+                                                <img src="@game.BackgroundImage"
+                                                     alt="@game.Name"
+                                                     class="game-card-image"
+                                                     loading="lazy">
+                                            }
+                                            else
+                                            {
+                                                <div class="game-card-image-placeholder">
+                                                    <i class="fas fa-gamepad"></i>
+                                                </div>
+                                            }
+                                            <div class="game-card-rating">
+                                                <span class="rating-badge">
+                                                    <i class="fas fa-star"></i> @game.Rating.ToString("F1")
+                                                </span>
+                                            </div>
+                                            <div class="game-card-selection-overlay">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                        </div>
+                                        <div class="game-card-content">
+                                            <h5 class="game-title">@game.Name</h5>
+                                            <small class="text-muted">
+                                                @game.RatingsCount ratings
+                                            </small>
+                                        </div>
+                                    </label>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="mt-4 d-flex gap-2 justify-content-center">
+                            <button type="submit" class="btn btn-primary" id="compareBtn"
+                                    style="background-color: var(--accent-primary); border-color: var(--accent-primary);"
+                                    disabled>
+                                <i class="fas fa-code-compare"></i> Compare Selected Games
+                            </button>
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Clear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .games-grid-search {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 15px;
+        margin: 0;
+    }
+
+    .game-card-selectable {
+        position: relative;
+    }
+
+    .game-checkbox {
+        position: absolute;
+        opacity: 0;
+        z-index: 0;
+    }
+
+    .game-card-label {
+        display: block;
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .game-card-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        background-color: var(--bg-primary);
+        aspect-ratio: 16 / 9;
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .game-checkbox:checked + .game-card-label .game-card-image-wrapper {
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 3px var(--bg-primary), 0 0 0 5px var(--accent-primary);
+    }
+
+    .game-card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .game-checkbox:checked + .game-card-label .game-card-image {
+        transform: scale(1.05);
+    }
+
+    .game-card-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        color: var(--text-secondary);
+        background-color: var(--bg-primary);
+    }
+
+    .game-card-rating {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+    }
+
+    .rating-badge {
+        background-color: var(--accent-primary);
+        color: white;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-card-selection-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(45, 90, 140, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        font-size: 48px;
+        color: var(--accent-primary);
+    }
+
+    .game-checkbox:checked + .game-card-label .game-card-selection-overlay {
+        opacity: 1;
+    }
+
+    .game-card-content {
+        padding: 10px;
+        background-color: var(--bg-secondary);
+        border-radius: 0 0 8px 8px;
+    }
+
+    .game-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: var(--text-primary);
+        font-size: 13px;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .games-grid-search {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .game-title {
+            font-size: 12px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .games-grid-search {
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+        }
+
+        .game-card-content {
+            padding: 8px;
+        }
+
+        .game-title {
+            font-size: 11px;
+        }
+
+        .rating-badge {
+            font-size: 10px;
+            padding: 4px 6px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.game-checkbox');
+        const compareBtn = document.getElementById('compareBtn');
+
+        function updateCompareButton() {
+            const checkedCount = document.querySelectorAll('.game-checkbox:checked').length;
+            compareBtn.disabled = checkedCount < 2 || checkedCount > 3;
+            if (checkedCount > 0) {
+                compareBtn.innerHTML = '<i class="fas fa-code-compare"></i> Compare ' + checkedCount + ' Game' + (checkedCount !== 1 ? 's' : '');
+            } else {
+                compareBtn.innerHTML = '<i class="fas fa-code-compare"></i> Compare Selected Games';
+            }
+        }
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateCompareButton);
+        });
+
+        updateCompareButton();
+    });
+</script>

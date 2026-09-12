@@ -1,0 +1,463 @@
+@model I_HAVE_GAME.ViewModels.CompareGamesViewModel
+
+@{
+    ViewData["Title"] = "Game Comparison";
+}
+
+<div class="container-fluid py-5">
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="display-6 fw-bold mb-0">
+                        <i class="fas fa-code-compare" style="color: #2D5A8C;"></i> Game Comparison
+                    </h1>
+                    <p class="lead text-muted mb-0">
+                        Comparing @Model.Games.Count game@(Model.Games.Count != 1 ? "s" : "")
+                    </p>
+                </div>
+                <a href="@Url.Action("Index")" class="btn btn-outline-primary">
+                    <i class="fas fa-plus"></i> Compare More Games
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Table -->
+    @if (Model.Games.Any())
+    {
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="table-responsive comparison-container">
+                    <table class="table comparison-table">
+                        <thead>
+                            <tr class="comparison-header">
+                                <th class="comparison-attribute">Attribute</th>
+                                @foreach (var game in Model.Games)
+                                {
+                                    <th class="comparison-game-header">
+                                        <div class="game-header-content">
+                                            @if (!string.IsNullOrEmpty(game.BackgroundImage))
+                                            {
+                                                <img src="@game.BackgroundImage"
+                                                     alt="@game.Name"
+                                                     class="comparison-game-image"
+                                                     loading="lazy">
+                                            }
+                                            else
+                                            {
+                                                <div class="comparison-game-image-placeholder">
+                                                    <i class="fas fa-gamepad"></i>
+                                                </div>
+                                            }
+                                            <h4 class="game-name-comparison mt-3 mb-2">@game.Name</h4>
+                                        </div>
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rating -->
+                            <tr>
+                                <td class="comparison-attribute">
+                                    <strong>Rating</strong>
+                                    <small class="d-block text-muted">(out of 5)</small>
+                                </td>
+                                @foreach (var game in Model.Games)
+                                {
+                                    <td class="comparison-value">
+                                        <div class="rating-display">
+                                            <i class="fas fa-star" style="color: #2D5A8C;"></i>
+                                            <span class="rating-value">@game.Rating.ToString("F2")</span>
+                                            <small class="d-block text-muted">
+                                                (@game.RatingsCount ratings)
+                                            </small>
+                                        </div>
+                                    </td>
+                                }
+                            </tr>
+
+                            <!-- Release Date -->
+                            <tr>
+                                <td class="comparison-attribute">
+                                    <strong>Release Date</strong>
+                                </td>
+                                @foreach (var game in Model.Games)
+                                {
+                                    <td class="comparison-value">
+                                        @if (!string.IsNullOrEmpty(game.Released))
+                                        {
+                                            <span>@game.Released</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+
+                            <!-- Genres -->
+                            <tr>
+                                <td class="comparison-attribute">
+                                    <strong>Genres</strong>
+                                </td>
+                                @foreach (var game in Model.Games)
+                                {
+                                    <td class="comparison-value">
+                                        @if (game.Genres.Any())
+                                        {
+                                            <ul class="list-unstyled genres-list">
+                                                @foreach (var genre in game.Genres)
+                                                {
+                                                    <li>
+                                                        <span class="badge" style="background-color: var(--accent-primary); color: white;">
+                                                            @genre
+                                                        </span>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+
+                            <!-- Platforms -->
+                            <tr>
+                                <td class="comparison-attribute">
+                                    <strong>Platforms</strong>
+                                </td>
+                                @foreach (var game in Model.Games)
+                                {
+                                    <td class="comparison-value">
+                                        @if (game.Platforms.Any())
+                                        {
+                                            <ul class="list-unstyled platforms-list">
+                                                @foreach (var platform in game.Platforms)
+                                                {
+                                                    <li>
+                                                        <i class="fas fa-desktop"></i> @platform
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+
+                            <!-- Description -->
+                            <tr>
+                                <td class="comparison-attribute">
+                                    <strong>Description</strong>
+                                </td>
+                                @foreach (var game in Model.Games)
+                                {
+                                    <td class="comparison-value">
+                                        @if (!string.IsNullOrEmpty(game.Description))
+                                        {
+                                            <p class="description-text">
+                                                @game.DescriptionTruncated
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No description available</span>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="fas fa-info-circle"></i> @Model.Message
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .comparison-container {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0;
+        margin: 0;
+        overflow-x: auto;
+    }
+
+    .comparison-table {
+        margin-bottom: 0;
+        border-collapse: collapse;
+    }
+
+    .comparison-table thead {
+        background-color: var(--bg-primary);
+        border-bottom: 2px solid var(--accent-primary);
+    }
+
+    .comparison-header {
+        border-bottom: 2px solid var(--accent-primary);
+    }
+
+    .comparison-attribute {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        font-weight: 600;
+        padding: 20px !important;
+        border-right: 1px solid var(--border-light);
+        text-align: left;
+        vertical-align: top;
+        width: 15%;
+        min-width: 150px;
+    }
+
+    .comparison-value {
+        padding: 20px !important;
+        color: var(--text-primary);
+        border-right: 1px solid var(--border-light);
+        text-align: left;
+        vertical-align: middle;
+        flex: 1;
+    }
+
+    .comparison-game-header {
+        padding: 20px !important;
+        color: var(--text-primary);
+        border-right: 1px solid var(--border-light);
+        text-align: center;
+        vertical-align: top;
+    }
+
+    .game-header-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .comparison-game-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px var(--shadow-light);
+    }
+
+    .comparison-game-image-placeholder {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 64px;
+        color: var(--text-secondary);
+        background-color: var(--bg-primary);
+        border-radius: 8px;
+        border: 1px solid var(--border-light);
+    }
+
+    .game-name-comparison {
+        color: var(--text-primary);
+        font-weight: bold;
+        font-size: 18px;
+        word-break: break-word;
+    }
+
+    .rating-display {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .rating-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--accent-primary);
+    }
+
+    .genres-list,
+    .platforms-list {
+        padding-left: 0;
+        margin-bottom: 0;
+    }
+
+    .genres-list li,
+    .platforms-list li {
+        margin-bottom: 8px;
+    }
+
+    .genres-list .badge {
+        font-size: 13px;
+        padding: 6px 10px;
+        display: inline-block;
+    }
+
+    .description-text {
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--text-primary);
+        margin-bottom: 0;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .comparison-table tbody tr:nth-child(odd) {
+        background-color: var(--bg-secondary);
+    }
+
+    .comparison-table tbody tr:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .comparison-table tbody tr:hover {
+        background-color: rgba(45, 90, 140, 0.05);
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @@media (max-width: 1200px) {
+        .comparison-attribute {
+            width: 20%;
+            min-width: 120px;
+            font-size: 14px;
+            padding: 15px !important;
+        }
+
+        .comparison-value {
+            padding: 15px !important;
+            font-size: 14px;
+        }
+
+        .comparison-game-image {
+            height: 150px;
+        }
+
+        .comparison-game-image-placeholder {
+            height: 150px;
+            font-size: 48px;
+        }
+
+        .game-name-comparison {
+            font-size: 16px;
+        }
+
+        .rating-value {
+            font-size: 20px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .comparison-attribute {
+            width: 25%;
+            min-width: 100px;
+            font-size: 12px;
+            padding: 12px !important;
+        }
+
+        .comparison-value {
+            padding: 12px !important;
+            font-size: 12px;
+        }
+
+        .comparison-game-image {
+            height: 120px;
+        }
+
+        .comparison-game-image-placeholder {
+            height: 120px;
+            font-size: 36px;
+        }
+
+        .game-name-comparison {
+            font-size: 14px;
+            margin-top: 10px !important;
+        }
+
+        .rating-value {
+            font-size: 18px;
+        }
+
+        .description-text {
+            font-size: 12px;
+            max-height: 150px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .comparison-container {
+            border-radius: 4px;
+        }
+
+        .comparison-attribute {
+            width: 30%;
+            min-width: 80px;
+            font-size: 11px;
+            padding: 10px !important;
+        }
+
+        .comparison-value {
+            padding: 10px !important;
+            font-size: 11px;
+        }
+
+        .comparison-game-image {
+            height: 100px;
+        }
+
+        .comparison-game-image-placeholder {
+            height: 100px;
+            font-size: 28px;
+        }
+
+        .game-name-comparison {
+            font-size: 12px;
+            margin-top: 8px !important;
+        }
+
+        .rating-value {
+            font-size: 16px;
+        }
+
+        .description-text {
+            font-size: 11px;
+            max-height: 120px;
+        }
+    }
+
+    /* Dark mode compatibility */
+    :root[data-bs-theme="dark"] .comparison-container,
+    [data-bs-theme="dark"] .comparison-container {
+        background-color: var(--bg-secondary);
+        border-color: var(--border-light);
+    }
+
+    :root[data-bs-theme="dark"] .comparison-attribute,
+    [data-bs-theme="dark"] .comparison-attribute {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        border-right-color: var(--border-light);
+    }
+
+    :root[data-bs-theme="dark"] .comparison-value,
+    [data-bs-theme="dark"] .comparison-value {
+        color: var(--text-primary);
+        border-right-color: var(--border-light);
+    }
+</style>
