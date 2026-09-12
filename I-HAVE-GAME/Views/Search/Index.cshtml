@@ -5,6 +5,8 @@
     ViewData["Title"] = "Search New Games";
 }
 
+@Html.AntiForgeryToken()
+
 <div class="search-container">
     <div class="search-header">
         <h1>🎮 Search New Games</h1>
@@ -239,18 +241,21 @@
                                 <button type="button" class="btn btn-sm btn-wishlist add-btn" 
                                         data-game-id="@game.Id" data-game-slug="@game.Slug" 
                                         data-game-name="@game.Name" data-game-image="@game.BackgroundImage"
+                                        data-game-genre="@string.Join(", ", game.Genres)"
                                         data-status="Wishlist" title="Add to Wishlist">
                                     🎯 Wishlist
                                 </button>
                                 <button type="button" class="btn btn-sm btn-backlog add-btn" 
                                         data-game-id="@game.Id" data-game-slug="@game.Slug" 
                                         data-game-name="@game.Name" data-game-image="@game.BackgroundImage"
+                                        data-game-genre="@string.Join(", ", game.Genres)"
                                         data-status="Backlog" title="Add to Backlog">
                                     📋 Backlog
                                 </button>
                                 <button type="button" class="btn btn-sm btn-played add-btn" 
                                         data-game-id="@game.Id" data-game-slug="@game.Slug" 
                                         data-game-name="@game.Name" data-game-image="@game.BackgroundImage"
+                                        data-game-genre="@string.Join(", ", game.Genres)"
                                         data-status="Played" title="Mark as Played">
                                     ✓ Played
                                 </button>
@@ -609,6 +614,7 @@
                 const gameSlug = this.dataset.gameSlug;
                 const gameName = this.dataset.gameName;
                 const gameImage = this.dataset.gameImage;
+                const gameGenre = this.dataset.gameGenre || ''; // Get genre from data attribute
                 const status = this.dataset.status;
 
                 // Disable button while processing
@@ -621,13 +627,14 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
+                            'RequestVerificationToken': csrfToken
                         },
                         body: JSON.stringify({
                             gameId: gameId,
                             gameSlug: gameSlug,
                             gameName: gameName,
                             gameImageUrl: gameImage,
+                            genre: gameGenre,
                             status: status
                         })
                     });

@@ -1,0 +1,178 @@
+﻿using I_HAVE_GAME.Data;
+using I_HAVE_GAME.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+
+namespace I_HAVE_GAME.Controllers
+{
+    /// <summary>
+    /// Controller for user profile and dashboard
+    /// Displays user information and library statistics
+    /// </summary>
+    [Authorize]
+    public class ProfileController : Controller
+    {
+        private readonly AppDbContext _dbContext;
+        private readonly ILogger<ProfileController> _logger;
+
+        public ProfileController(AppDbContext dbContext, ILogger<ProfileController> logger)
+        {
+            _dbContext = dbContext;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Get the current authenticated user's ID from claims
+        /// </summary>
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdClaim?.Value, out var userId))
+            {
+                throw new UnauthorizedAccessException("User ID not found in claims");
+            }
+            return userId;
+        }
+
+        /// <summary>
+        /// Display user profile and dashboard
+        /// </summary>
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+
+                // Get user info
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
+
+                // Get user's game library items
+                var libraryItems = await _dbContext.GameLibraryItems
+                    .Where(g => g.UserId == userId)
+                    .ToListAsync(cancellationToken);
+
+                // Get user's search history
+                var searchHistory = await _dbContext.SearchHistories
+                    .Where(s => s.UserId == userId)
+                    .OrderByDescending(s => s.SearchedAt)
+                    .ToListAsync(cancellationToken);
+
+                // Build view model
+                var model = new ProfileViewModel
+                {
+                    Username = user.Username,
+                    Email = user.Email,
+                    Nickname = user.Nickname ?? "Not set",
+                    MainDevice = user.MainDevice ?? "Not set",
+                    CreatedAt = user.CreatedAt
+                };
+
+                // Calculate statistics
+                var playedGames = libraryItems.Where(g => g.Status == "Played").ToList();
+                var wishlistGames = libraryItems.Where(g => g.Status == "Wishlist").ToList();
+                var backlogGames = libraryItems.Where(g => g.Status == "Backlog").ToList();
+
+                model.TotalPlayedCount = playedGames.Count;
+                model.TotalWishlistCount = wishlistGames.Count;
+                model.TotalBacklogCount = backlogGames.Count;
+                model.TotalSearchCount = searchHistory.Count;
+
+                // Calculate average rating (only for played games with ratings)
+                var ratedGames = playedGames.Where(g => g.Rating.HasValue).ToList();
+                if (ratedGames.Any())
+                {
+                    model.AverageRating = (decimal)ratedGames.Average(g => g.Rating.Value);
+                }
+                else
+                {
+                    model.AverageRating = 0;
+                }
+
+                // Extract favorite genres from played games
+                // This requires extracting genre names from game metadata or using a heuristic
+                model.FavoriteGenres = ExtractFavoriteGenres(playedGames);
+
+                // Prepare search activity data for chart
+                model.SearchActivityData = CalculateSearchActivity(searchHistory);
+
+                // Prepare genre proportion data for chart
+                model.GenreProportionData = CalculateGenreProportions(model.FavoriteGenres);
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading profile");
+                return StatusCode(500, "An error occurred while loading your profile");
+            }
+        }
+
+        /// <summary>
+        /// Extract favorite genres from played games
+        /// Note: GameLibraryItem doesn't store genre info, so this uses a heuristic
+        /// based on game names or returns empty list
+        /// </summary>
+        private List<GenreCountViewModel> ExtractFavoriteGenres(List<Models.GameLibraryItem> playedGames)
+        {
+            // Since GameLibraryItem doesn't store RAWG genre data directly,
+            // we'll create a basic list showing the count of played games
+            // In a production system, you would store genre metadata with each library item
+            var genres = new List<GenreCountViewModel>();
+
+            // For now, return empty list (the dashboard will show "No genre data available")
+            // Future enhancement: Store RAWG genre data when adding games to library
+            return genres;
+        }
+
+        /// <summary>
+        /// Calculate search activity over the last 30 days
+        /// </summary>
+        private List<SearchActivityViewModel> CalculateSearchActivity(List<Models.SearchHistory> searchHistory)
+        {
+            var data = new List<SearchActivityViewModel>();
+            var today = DateTime.UtcNow.Date;
+
+            // Group search history by date for the last 30 days
+            var last30Days = searchHistory
+                .Where(s => s.SearchedAt.Date >= today.AddDays(-30))
+                .GroupBy(s => s.SearchedAt.Date)
+                .OrderBy(g => g.Key)
+                .Select(g => new SearchActivityViewModel
+                {
+                    Date = g.Key.ToString("MMM dd"),
+                    SearchCount = g.Count()
+                })
+                .ToList();
+
+            return last30Days;
+        }
+
+        /// <summary>
+        /// Calculate genre proportion data for chart
+        /// </summary>
+        private List<GenreProportionViewModel> CalculateGenreProportions(List<GenreCountViewModel> genres)
+        {
+            if (!genres.Any())
+            {
+                return new List<GenreProportionViewModel>();
+            }
+
+            var total = genres.Sum(g => g.Count);
+            return genres
+                .OrderByDescending(g => g.Count)
+                .Select(g => new GenreProportionViewModel
+                {
+                    Genre = g.Genre,
+                    Count = g.Count,
+                    Percentage = total > 0 ? Math.Round((decimal)g.Count / total * 100, 1) : 0
+                })
+                .ToList();
+        }
+    }
+}

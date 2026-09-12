@@ -1,0 +1,61 @@
+﻿using I_HAVE_GAME.Services;
+using I_HAVE_GAME.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
+namespace I_HAVE_GAME.Controllers
+{
+    /// <summary>
+    /// Controller for managing game recommendations
+    /// Recommendations are based on user's library preferences
+    /// </summary>
+    [Authorize]
+    public class RecommendationsController : Controller
+    {
+        private readonly RecommendationService _recommendationService;
+        private readonly ILogger<RecommendationsController> _logger;
+
+        public RecommendationsController(RecommendationService recommendationService, ILogger<RecommendationsController> logger)
+        {
+            _recommendationService = recommendationService;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Get the current user's ID from claims
+        /// </summary>
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdClaim?.Value, out var userId))
+            {
+                throw new UnauthorizedAccessException("User ID not found in claims");
+            }
+            return userId;
+        }
+
+        /// <summary>
+        /// Display recommendations for the current user
+        /// </summary>
+        public async Task<IActionResult> Index(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var recommendations = await _recommendationService.GetRecommendationsAsync(userId, cancellationToken: cancellationToken);
+                return View(recommendations);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError(ex, "Unauthorized access attempt in recommendations");
+                return Redirect("/Account/Login");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading recommendations");
+                return View("Error", new { message = "An error occurred while loading recommendations. Please try again." });
+            }
+        }
+    }
+}

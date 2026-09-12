@@ -74,10 +74,18 @@ namespace I_HAVE_GAME.Controllers
                     }
 
                     var newQuestionIds = await _dbContext.QuizQuestions
-                        .OrderBy(q => Guid.NewGuid())
-                        .Take(QUESTIONS_PER_ROUND)
                         .Select(q => q.Id)
                         .ToListAsync();
+
+                    // Randomize the question selection using Fisher-Yates shuffle
+                    var random = new Random();
+                    for (int i = newQuestionIds.Count - 1; i > 0; i--)
+                    {
+                        int randomIndex = random.Next(i + 1);
+                        (newQuestionIds[i], newQuestionIds[randomIndex]) = (newQuestionIds[randomIndex], newQuestionIds[i]);
+                    }
+
+                    newQuestionIds = newQuestionIds.Take(QUESTIONS_PER_ROUND).ToList();
 
                     // Store in session
                     HttpContext.Session.SetString(QUIZ_IDS_KEY, string.Join(",", newQuestionIds));
@@ -298,68 +306,5 @@ namespace I_HAVE_GAME.Controllers
                 return View("Error", new ErrorViewModel { RequestId = "QuizHistoryError" });
             }
         }
-            /// <summary>
-            /// GET: /Quiz/Leaderboard - Display quiz leaderboard with top scores
-            /// </summary>
-            [HttpGet]
-            public async Task<IActionResult> Leaderboard()
-            {
-                try
-                {
-                    var currentUserId = GetCurrentUserId();
-
-                    // Get all quiz attempts grouped by user with aggregated data
-                    var leaderboardData = await _dbContext.QuizAttempts
-                        .Include(qa => qa.User)
-                        .GroupBy(qa => new { qa.UserId, qa.User.Nickname })
-                        .Select(g => new
-                        {
-                            UserId = g.Key.UserId,
-                            Nickname = g.Key.Nickname ?? $"Player {g.Key.UserId}",
-                            TotalScore = g.Sum(qa => qa.Score),
-                            AttemptCount = g.Count(),
-                            LastPlayed = g.Max(qa => qa.PlayedAt),
-                            IsCurrentUser = g.Key.UserId == currentUserId
-                        })
-                        .OrderByDescending(x => x.TotalScore)
-                        .ThenByDescending(x => x.AttemptCount)
-                        .AsNoTracking()
-                        .ToListAsync();
-
-                    var leaderboardViewModel = leaderboardData.Select((item, index) => new
-                    {
-                        Rank = index + 1,
-                        item.UserId,
-                        item.Nickname,
-                        item.TotalScore,
-                        item.AttemptCount,
-                        item.LastPlayed,
-                        item.IsCurrentUser,
-                        Medal = index switch
-                        {
-                            0 => "🥇",
-                            1 => "🥈",
-                            2 => "🥉",
-                            _ => ""
-                        }
-                    }).ToList();
-
-                    // Find current user's rank if not in top results
-                    var currentUserRank = leaderboardViewModel.FirstOrDefault(x => x.IsCurrentUser);
-
-                    // ViewBag for current user info
-                    ViewBag.CurrentUserRank = currentUserRank?.Rank;
-                    ViewBag.CurrentUserScore = currentUserRank?.TotalScore;
-                    ViewBag.CurrentUserAttempts = currentUserRank?.AttemptCount;
-
-                    return View(leaderboardViewModel);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error loading leaderboard");
-                    ViewBag.ErrorMessage = "An error occurred while loading the leaderboard.";
-                    return View("Error", new ErrorViewModel { RequestId = "LeaderboardError" });
-                }
-            }
-        }
     }
+}

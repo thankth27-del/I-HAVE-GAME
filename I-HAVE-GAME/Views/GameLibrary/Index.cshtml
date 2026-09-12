@@ -5,6 +5,8 @@
     ViewData["Title"] = "My Game Library";
 }
 
+@Html.AntiForgeryToken()
+
 <div class="library-container">
     <div class="library-header">
         <h1>🎮 My Game Library</h1>
@@ -618,7 +620,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
+                        'RequestVerificationToken': csrfToken
                     },
                     body: JSON.stringify({
                         itemId: itemId,
@@ -652,7 +654,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
+                            'RequestVerificationToken': csrfToken
                         },
                         body: JSON.stringify({
                             itemId: itemId,
@@ -686,7 +688,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
+                            'RequestVerificationToken': csrfToken
                         },
                         body: JSON.stringify({
                             itemId: itemId

@@ -1,4 +1,4 @@
-@model List<dynamic>
+﻿@model List<dynamic>
 
 @{
     ViewData["Title"] = "Quiz Leaderboard";
@@ -249,7 +249,7 @@
         color: var(--leaderboard-primary);
     }
 
-    @@media (max-width: 768px) {
+    @media (max-width: 768px) {
         .leaderboard-table td {
             padding: 10px;
             font-size: 14px;

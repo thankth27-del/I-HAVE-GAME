@@ -1,0 +1,234 @@
+﻿@model I_HAVE_GAME.ViewModels.QuizViewModel
+
+@{
+    ViewData["Title"] = $"Question {Model.QuestionNumber} - Quiz";
+}
+
+<style>
+    :root {
+        --quiz-primary: #007bff;
+        --quiz-accent: #0056b3;
+        --quiz-success: #28a745;
+        --quiz-bg-light: #ffffff;
+        --quiz-text-light: #212529;
+        --quiz-border-light: #dee2e6;
+    }
+
+    html.dark-mode {
+        --quiz-primary: #4ba3ff;
+        --quiz-accent: #357abd;
+        --quiz-success: #51cf66;
+        --quiz-bg-light: #2a2a2a;
+        --quiz-text-light: #e9ecef;
+        --quiz-border-light: #495057;
+    }
+
+    .quiz-container {
+        background: var(--quiz-bg-light);
+        color: var(--quiz-text-light);
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .quiz-card {
+        background: var(--quiz-bg-light);
+        border: 2px solid var(--quiz-primary);
+        border-radius: 12px;
+        padding: 40px;
+        max-width: 700px;
+        width: 100%;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .quiz-progress {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        background: rgba(0, 123, 255, 0.1);
+        padding: 15px;
+        border-radius: 6px;
+    }
+
+    .quiz-progress-text {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--quiz-primary);
+    }
+
+    .quiz-progress-bar {
+        flex: 1;
+        height: 8px;
+        background: var(--quiz-border-light);
+        border-radius: 4px;
+        margin: 0 15px;
+        overflow: hidden;
+    }
+
+    .quiz-progress-fill {
+        height: 100%;
+        background: var(--quiz-success);
+        width: calc(@Model.QuestionNumber / @Model.TotalQuestions * 100%);
+        transition: width 0.3s ease;
+    }
+
+    .quiz-question-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--quiz-text-light);
+        margin-bottom: 30px;
+        line-height: 1.5;
+    }
+
+    .quiz-choices-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .quiz-choice-btn {
+        background: var(--quiz-bg-light);
+        border: 2px solid var(--quiz-border-light);
+        color: var(--quiz-text-light);
+        padding: 16px 20px;
+        font-size: 16px;
+        text-align: left;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .quiz-choice-btn:hover {
+        border-color: var(--quiz-primary);
+        background: rgba(0, 123, 255, 0.05);
+    }
+
+    .quiz-choice-btn input[type="radio"] {
+        margin-right: 10px;
+    }
+
+    .quiz-choice-btn input[type="radio"]:checked + span {
+        color: var(--quiz-primary);
+        font-weight: 700;
+    }
+
+    .quiz-choice-btn.selected {
+        border-color: var(--quiz-primary);
+        background: rgba(0, 123, 255, 0.1);
+    }
+
+    .quiz-submit-btn {
+        background: var(--quiz-primary);
+        border: none;
+        color: white;
+        padding: 14px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 30px;
+        width: 100%;
+        transition: background 0.3s ease;
+    }
+
+    .quiz-submit-btn:hover {
+        background: var(--quiz-accent);
+    }
+
+    .quiz-submit-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 576px) {
+        .quiz-card {
+            padding: 20px;
+        }
+
+        .quiz-question-title {
+            font-size: 18px;
+        }
+
+        .quiz-choice-btn {
+            padding: 14px 16px;
+            font-size: 15px;
+        }
+
+        .quiz-progress {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-progress-bar {
+            width: 100%;
+            margin: 0;
+        }
+    }
+</style>
+
+<div class="quiz-container">
+    <div class="quiz-card">
+        <div class="quiz-progress">
+            <div class="quiz-progress-text">Question @Model.QuestionNumber/@Model.TotalQuestions</div>
+            <div class="quiz-progress-bar">
+                <div class="quiz-progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="quiz-question-title">
+            @Model.QuestionText
+        </div>
+
+        <form method="post" asp-action="Answer" class="quiz-choices-form">
+            <input type="hidden" name="questionId" value="@Model.Id" />
+            @Html.AntiForgeryToken()
+
+            <label class="quiz-choice-btn">
+                <input type="radio" name="answer" value="@Model.Choice1" required onchange="this.parentElement.classList.add('selected')" />
+                <span>@Model.Choice1</span>
+            </label>
+
+            <label class="quiz-choice-btn">
+                <input type="radio" name="answer" value="@Model.Choice2" required onchange="this.parentElement.classList.add('selected')" />
+                <span>@Model.Choice2</span>
+            </label>
+
+            <label class="quiz-choice-btn">
+                <input type="radio" name="answer" value="@Model.Choice3" required onchange="this.parentElement.classList.add('selected')" />
+                <span>@Model.Choice3</span>
+            </label>
+
+            <label class="quiz-choice-btn">
+                <input type="radio" name="answer" value="@Model.Choice4" required onchange="this.parentElement.classList.add('selected')" />
+                <span>@Model.Choice4</span>
+            </label>
+
+            <button type="submit" class="quiz-submit-btn">
+                <i class="fas fa-arrow-right"></i> Next Question
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Auto-select when clicking on the entire label
+    document.querySelectorAll('.quiz-choice-btn').forEach(label => {
+        label.addEventListener('click', function () {
+            document.querySelectorAll('.quiz-choice-btn').forEach(l => l.classList.remove('selected'));
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                this.classList.add('selected');
+            }
+        });
+    });
+
+    // Prevent form resubmission on refresh
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+</script>

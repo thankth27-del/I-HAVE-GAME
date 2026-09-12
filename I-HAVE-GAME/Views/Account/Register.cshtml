@@ -1,14 +1,14 @@
 @model RegisterViewModel
 
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "สมัครสมาชิก";
 }
 
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
-            <h1 class="auth-title">Join I-HAVE-GAME</h1>
-            <p class="auth-subtitle">Create your account to get started</p>
+            <h1 class="auth-title"><i class="fas fa-gamepad"></i> I-HAVE-GAME</h1>
+            <p class="auth-subtitle">สมัครสมาชิกเพื่อเริ่มใช้งาน</p>
         </div>
 
         <form method="post" asp-action="Register" asp-controller="Account" class="auth-form">
@@ -23,34 +23,34 @@
             }
 
             <div class="form-group">
-                <label asp-for="Username" class="form-label">Username</label>
-                <input asp-for="Username" class="form-control" placeholder="Choose your username">
+                <label asp-for="Username" class="form-label">ชื่อผู้ใช้</label>
+                <input asp-for="Username" class="form-control" placeholder="เลือกชื่อผู้ใช้ของคุณ">
                 <span asp-validation-for="Username" class="text-danger small"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Email" class="form-label">Email</label>
+                <label asp-for="Email" class="form-label">อีเมล</label>
                 <input asp-for="Email" class="form-control" placeholder="your@email.com">
                 <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Password" class="form-label">Password</label>
-                <input asp-for="Password" class="form-control" placeholder="At least 6 characters">
+                <label asp-for="Password" class="form-label">รหัสผ่าน</label>
+                <input asp-for="Password" class="form-control" placeholder="อย่างน้อย 6 ตัวอักษร">
                 <span asp-validation-for="Password" class="text-danger small"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
-                <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm your password">
+                <label asp-for="ConfirmPassword" class="form-label">ยืนยันรหัสผ่าน</label>
+                <input asp-for="ConfirmPassword" class="form-control" placeholder="ยืนยันรหัสผ่านของคุณ">
                 <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 btn-lg">Create Account</button>
+            <button type="submit" class="btn btn-primary w-100 btn-lg">สร้างบัญชี</button>
         </form>
 
         <div class="auth-footer">
-            <p>Already have an account? <a asp-action="Login" asp-controller="Account">Sign in</a></p>
+            <p>มีบัญชีแล้ว? <a asp-action="Login" asp-controller="Account">เข้าสู่ระบบ</a></p>
         </div>
     </div>
 </div>

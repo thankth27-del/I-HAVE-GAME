@@ -6,7 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Load user secrets in development
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
 builder.Services.AddControllersWithViews();
 
 // Add Session
@@ -53,10 +57,19 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Seed the database
+// Apply migrations and seed the database
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    // Apply pending migrations
+    try
+    {
+        dbContext.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error applying migrations: {ex.Message}");
+    }
     DbSeeder.SeedQuizQuestions(dbContext);
 }
 

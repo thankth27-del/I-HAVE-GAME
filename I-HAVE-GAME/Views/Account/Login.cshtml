@@ -1,14 +1,14 @@
 @model LoginViewModel
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "เข้าสู่ระบบ";
 }
 
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
-            <h1 class="auth-title">I-HAVE-GAME</h1>
-            <p class="auth-subtitle">Sign in to your account</p>
+            <h1 class="auth-title"><i class="fas fa-gamepad"></i> I-HAVE-GAME</h1>
+            <p class="auth-subtitle">เข้าสู่ระบบเพื่อดำเนินการต่อ</p>
         </div>
 
         <form method="post" asp-action="Login" asp-controller="Account" class="auth-form">
@@ -29,29 +29,29 @@
             }
 
             <div class="form-group">
-                <label asp-for="UsernameOrEmail" class="form-label">Username or Email</label>
-                <input asp-for="UsernameOrEmail" class="form-control" placeholder="Enter username or email">
+                <label asp-for="UsernameOrEmail" class="form-label">ชื่อผู้ใช้หรืออีเมล</label>
+                <input asp-for="UsernameOrEmail" class="form-control" placeholder="ป้อนชื่อผู้ใช้หรืออีเมล">
                 <span asp-validation-for="UsernameOrEmail" class="text-danger small"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Password" class="form-label">Password</label>
-                <input asp-for="Password" class="form-control" placeholder="Enter your password">
+                <label asp-for="Password" class="form-label">รหัสผ่าน</label>
+                <input asp-for="Password" class="form-control" placeholder="ป้อนรหัสผ่านของคุณ">
                 <span asp-validation-for="Password" class="text-danger small"></span>
             </div>
 
             <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" id="rememberMe" asp-for="RememberMe">
                 <label class="form-check-label" for="rememberMe">
-                    Remember me for 30 days
+                    จำฉันไว้สำหรับ 30 วัน
                 </label>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 btn-lg">Sign In</button>
+            <button type="submit" class="btn btn-primary w-100 btn-lg">เข้าสู่ระบบ</button>
         </form>
 
         <div class="auth-footer">
-            <p>Don't have an account? <a asp-action="Register" asp-controller="Account">Create one now</a></p>
+            <p>ยังไม่มีบัญชี? <a asp-action="Register" asp-controller="Account">สมัครสมาชิกทั้งนี้</a></p>
         </div>
     </div>
 </div>

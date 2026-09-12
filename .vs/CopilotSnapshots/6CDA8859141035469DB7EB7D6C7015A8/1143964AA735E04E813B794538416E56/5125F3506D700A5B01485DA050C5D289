@@ -1,0 +1,425 @@
+﻿@model I_HAVE_GAME.ViewModels.RecommendationsViewModel
+
+@{
+    ViewData["Title"] = "Game Recommendations";
+}
+
+<style>
+    :root {
+        --rec-primary: #007bff;
+        --rec-accent: #0056b3;
+        --rec-success: #28a745;
+        --rec-warning: #ffc107;
+        --rec-danger: #dc3545;
+        --rec-bg-light: #ffffff;
+        --rec-text-light: #212529;
+        --rec-border-light: #dee2e6;
+        --rec-shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    html.dark-mode {
+        --rec-primary: #4ba3ff;
+        --rec-accent: #357abd;
+        --rec-success: #51cf66;
+        --rec-warning: #ffd43b;
+        --rec-danger: #ff6b6b;
+        --rec-bg-light: #2a2a2a;
+        --rec-text-light: #e9ecef;
+        --rec-border-light: #495057;
+        --rec-shadow: rgba(255, 255, 255, 0.1);
+    }
+
+    .recommendations-container {
+        background: var(--rec-bg-light);
+        color: var(--rec-text-light);
+        min-height: calc(100vh - 200px);
+        padding: 40px 20px;
+    }
+
+    .recommendations-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .recommendations-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .recommendations-title {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--rec-primary);
+        margin: 0;
+    }
+
+    .recommendations-subtitle {
+        font-size: 16px;
+        color: var(--rec-text-light);
+        opacity: 0.7;
+        margin-top: 5px;
+    }
+
+    .recommendations-back-btn {
+        padding: 10px 20px;
+        background: var(--rec-primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .recommendations-back-btn:hover {
+        background: var(--rec-accent);
+        color: white;
+        text-decoration: none;
+    }
+
+    .recommendations-empty {
+        background: var(--rec-bg-light);
+        border: 2px dashed var(--rec-border-light);
+        border-radius: 12px;
+        padding: 60px 40px;
+        text-align: center;
+    }
+
+    .recommendations-empty-icon {
+        font-size: 80px;
+        color: var(--rec-border-light);
+        margin-bottom: 20px;
+    }
+
+    .recommendations-empty-text {
+        font-size: 18px;
+        color: var(--rec-text-light);
+        margin-bottom: 20px;
+    }
+
+    .recommendations-empty-btn {
+        padding: 12px 30px;
+        background: var(--rec-primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        display: inline-block;
+    }
+
+    .recommendations-empty-btn:hover {
+        background: var(--rec-accent);
+        color: white;
+    }
+
+    .recommendations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .recommendation-card {
+        background: var(--rec-bg-light);
+        border: 2px solid var(--rec-border-light);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        box-shadow: 0 2px 8px var(--rec-shadow);
+    }
+
+    .recommendation-card:hover {
+        border-color: var(--rec-primary);
+        box-shadow: 0 8px 16px var(--rec-shadow);
+        transform: translateY(-4px);
+    }
+
+    .recommendation-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 200px;
+        background: linear-gradient(135deg, var(--rec-primary) 0%, var(--rec-accent) 100%);
+    }
+
+    .recommendation-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .recommendation-card:hover .recommendation-image {
+        transform: scale(1.08);
+    }
+
+    .recommendation-rating-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--rec-primary);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .recommendation-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .recommendation-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--rec-text-light);
+        margin: 0 0 12px 0;
+        line-height: 1.4;
+        min-height: 52px;
+    }
+
+    .recommendation-rating-info {
+        font-size: 12px;
+        color: var(--rec-text-light);
+        opacity: 0.7;
+        margin-bottom: 12px;
+    }
+
+    .recommendation-genres {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .recommendation-genre-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        background: rgba(0, 123, 255, 0.15);
+        color: var(--rec-primary);
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    html.dark-mode .recommendation-genre-tag {
+        background: rgba(75, 163, 255, 0.15);
+    }
+
+    .recommendation-platforms {
+        font-size: 12px;
+        color: var(--rec-text-light);
+        opacity: 0.7;
+        margin-top: auto;
+        padding-top: 12px;
+        border-top: 1px solid var(--rec-border-light);
+    }
+
+    .recommendation-platform-label {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .recommendations-info-box {
+        background: rgba(0, 123, 255, 0.1);
+        border-left: 4px solid var(--rec-primary);
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 6px;
+        font-size: 16px;
+        color: var(--rec-text-light);
+    }
+
+    html.dark-mode .recommendations-info-box {
+        background: rgba(75, 163, 255, 0.1);
+        border-left-color: var(--rec-primary);
+    }
+
+    .recommendations-icon {
+        margin-right: 8px;
+    }
+
+    @@media (max-width: 768px) {
+        .recommendations-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .recommendations-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .recommendations-title {
+            font-size: 28px;
+        }
+
+        .recommendations-back-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .recommendation-image-wrapper {
+            height: 160px;
+        }
+
+        .recommendation-body {
+            padding: 15px;
+        }
+
+        .recommendation-title {
+            font-size: 16px;
+            min-height: 40px;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .recommendations-container {
+            padding: 20px 15px;
+        }
+
+        .recommendations-title {
+            font-size: 24px;
+        }
+
+        .recommendations-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .recommendation-image-wrapper {
+            height: 180px;
+        }
+
+        .recommendations-empty {
+            padding: 40px 20px;
+        }
+
+        .recommendations-empty-icon {
+            font-size: 60px;
+        }
+    }
+</style>
+
+<div class="recommendations-container">
+    <div class="recommendations-wrapper">
+        <div class="recommendations-header">
+            <div>
+                <h1 class="recommendations-title">
+                    <i class="fas fa-sparkles recommendations-icon"></i>
+                    Game Recommendations
+                </h1>
+                <p class="recommendations-subtitle">Personalized recommendations based on your library</p>
+            </div>
+            <a href="@Url.Action("Index", "Home")" class="recommendations-back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Message))
+        {
+            if (Model.Recommendations.Count == 0)
+            {
+                <div class="recommendations-empty">
+                    <div class="recommendations-empty-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <p class="recommendations-empty-text">@Model.Message</p>
+                    <a href="@Url.Action("Index", "GameLibrary")" class="recommendations-empty-btn">
+                        <i class="fas fa-book"></i>
+                        Go to My Library
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="recommendations-info-box">
+                    <i class="fas fa-info-circle recommendations-icon"></i>
+                    @Model.Message
+                </div>
+            }
+        }
+
+        @if (Model.Recommendations.Count > 0)
+        {
+            <div class="recommendations-grid">
+                @foreach (var game in Model.Recommendations)
+                {
+                    <div class="recommendation-card">
+                        <div class="recommendation-image-wrapper">
+                            @if (!string.IsNullOrWhiteSpace(game.ImageUrl))
+                            {
+                                <img src="@game.ImageUrl" alt="@game.Name" class="recommendation-image" loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="recommendation-image" style="background: linear-gradient(135deg, var(--rec-primary) 0%, var(--rec-accent) 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-gamepad" style="font-size: 60px; color: white; opacity: 0.3;"></i>
+                                </div>
+                            }
+                            <div class="recommendation-rating-badge">
+                                <i class="fas fa-star"></i>
+                                @game.Rating.ToString("F1")
+                            </div>
+                        </div>
+
+                        <div class="recommendation-body">
+                            <h3 class="recommendation-title">@game.Name</h3>
+
+                            <div class="recommendation-rating-info">
+                                <i class="fas fa-poll"></i>
+                                @game.RatingsCount.ToString("N0") ratings
+                            </div>
+
+                            @if (game.Genres.Any())
+                            {
+                                <div class="recommendation-genres">
+                                    @foreach (var genre in game.Genres.Take(3))
+                                    {
+                                        <span class="recommendation-genre-tag">@genre</span>
+                                    }
+                                    @if (game.Genres.Count > 3)
+                                    {
+                                        <span class="recommendation-genre-tag">+@(game.Genres.Count - 3)</span>
+                                    }
+                                </div>
+                            }
+
+                            @if (game.Platforms.Any())
+                            {
+                                <div class="recommendation-platforms">
+                                    <div class="recommendation-platform-label">
+                                        <i class="fas fa-desktop"></i>
+                                        Platforms
+                                    </div>
+                                    @game.PlatformsDisplay
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

@@ -46,6 +46,8 @@ namespace I_HAVE_GAME.Data
                 entity.Property(g => g.GameImageUrl).IsRequired(false);
                 entity.Property(g => g.Rating).IsRequired(false);
                 entity.Property(g => g.Review).IsRequired(false);
+                entity.Property(g => g.Genre).IsRequired(false);
+                entity.Property(g => g.AddedAt).IsRequired();
                 entity.HasOne(g => g.User)
                     .WithMany(u => u.GameLibraryItems)
                     .HasForeignKey(g => g.UserId)

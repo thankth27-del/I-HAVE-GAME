@@ -224,57 +224,52 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
-                                    <i class="fas fa-home"></i> Home
+                                    <i class="fas fa-home"></i> หน้าแรก
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Search" asp-action="Index">
-                                    <i class="fas fa-search"></i> Search New Games
+                                    <i class="fas fa-search"></i> ค้นหาเกม
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Recommendations" asp-action="Index">
-                                    <i class="fas fa-sparkles"></i> Recommendations
+                                    <i class="fas fa-sparkles"></i> เกมแนะนำ
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Trending" asp-action="Index">
-                                    <i class="fas fa-fire"></i> Weekly Trending
+                                    <i class="fas fa-fire"></i> เกมยอดนิยม
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Compare" asp-action="Index">
-                                    <i class="fas fa-code-compare"></i> Compare Games
+                                    <i class="fas fa-code-compare"></i> เปรียบเทียบเกม
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Profile" asp-action="Index">
-                                    <i class="fas fa-user"></i> My Profile
+                                    <i class="fas fa-user"></i> โปรไฟล์
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="GameLibrary" asp-action="Index">
-                                    <i class="fas fa-book"></i> My Library
+                                    <i class="fas fa-book"></i> คลังเกม
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Quiz" asp-action="Index">
-                                    <i class="fas fa-gamepad"></i> Quiz
+                                    <i class="fas fa-gamepad"></i> ทายชื่อเกม
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Quiz" asp-action="Leaderboard">
-                                    <i class="fas fa-trophy"></i> Leaderboard
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Quiz" asp-action="History">
-                                    <i class="fas fa-history"></i> Quiz History
+                                <a class="nav-link" asp-area="" asp-controller="SearchHistory" asp-action="Index">
+                                    <i class="fas fa-history"></i> ประวัติการค้นหา
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
-                                    <i class="fas fa-shield-alt"></i> Privacy
+                                    <i class="fas fa-shield-alt"></i> ความเป็นส่วนตัว
                                 </a>
                             </li>
 
@@ -282,7 +277,7 @@
                             {
                                 <li class="nav-item admin-nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">
-                                        <i class="fas fa-cog"></i> Admin Dashboard
+                                        <i class="fas fa-cog"></i> รายการจัดการ
                                     </a>
                                 </li>
                             }
@@ -300,27 +295,27 @@
                                 <span>@(User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value ?? "User")</span>
                                 @if (User.IsInRole("Admin"))
                                 {
-                                    <span class="admin-badge">ADMIN</span>
+                                    <span class="admin-badge">ผู้ดูแลระบบ</span>
                                 }
                                 else
                                 {
-                                    <span class="user-badge">USER</span>
+                                    <span class="user-badge">ผู้ใช้</span>
                                 }
                             </div>
                             <form method="post" asp-action="Logout" asp-controller="Account" style="display: inline;">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn-logout">
-                                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                                    <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
                                 </button>
                             </form>
                         }
                         else
                         {
                             <a href="@Url.Action("Login", "Account")" class="btn-login">
-                                <i class="fas fa-sign-in-alt"></i> Sign In
+                                <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
                             </a>
                             <a href="@Url.Action("Register", "Account")" class="btn-register">
-                                <i class="fas fa-user-plus"></i> Register
+                                <i class="fas fa-user-plus"></i> สมัครสมาชิก
                             </a>
                         }
                     </div>

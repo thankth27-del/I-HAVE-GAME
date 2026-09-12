@@ -1,0 +1,310 @@
+﻿@model List<I_HAVE_GAME.ViewModels.QuizAttemptHistoryViewModel>
+
+@{
+    ViewData["Title"] = "Quiz History";
+}
+
+<style>
+    :root {
+        --quiz-primary: #007bff;
+        --quiz-accent: #0056b3;
+        --quiz-success: #28a745;
+        --quiz-bg-light: #ffffff;
+        --quiz-text-light: #212529;
+        --quiz-border-light: #dee2e6;
+    }
+
+    html.dark-mode {
+        --quiz-primary: #4ba3ff;
+        --quiz-accent: #357abd;
+        --quiz-success: #51cf66;
+        --quiz-bg-light: #2a2a2a;
+        --quiz-text-light: #e9ecef;
+        --quiz-border-light: #495057;
+    }
+
+    .quiz-history-container {
+        background: var(--quiz-bg-light);
+        color: var(--quiz-text-light);
+        min-height: calc(100vh - 200px);
+        padding: 40px 20px;
+    }
+
+    .quiz-history-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .quiz-history-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .quiz-history-title {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--quiz-primary);
+        margin: 0;
+    }
+
+    .quiz-history-back-btn {
+        padding: 10px 20px;
+        background: var(--quiz-primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s ease;
+    }
+
+    .quiz-history-back-btn:hover {
+        background: var(--quiz-accent);
+        color: white;
+    }
+
+    .quiz-history-empty {
+        background: var(--quiz-bg-light);
+        border: 2px dashed var(--quiz-border-light);
+        border-radius: 12px;
+        padding: 60px 40px;
+        text-align: center;
+    }
+
+    .quiz-history-empty-icon {
+        font-size: 80px;
+        color: var(--quiz-border-light);
+        margin-bottom: 20px;
+    }
+
+    .quiz-history-empty-text {
+        font-size: 18px;
+        color: var(--quiz-text-light);
+        margin-bottom: 20px;
+    }
+
+    .quiz-history-empty-btn {
+        padding: 12px 30px;
+        background: var(--quiz-primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        display: inline-block;
+    }
+
+    .quiz-history-empty-btn:hover {
+        background: var(--quiz-accent);
+        color: white;
+    }
+
+    .quiz-history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .quiz-history-item {
+        background: var(--quiz-bg-light);
+        border: 2px solid var(--quiz-border-light);
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+        border-left: 5px solid var(--quiz-primary);
+    }
+
+    .quiz-history-item:hover {
+        border-color: var(--quiz-primary);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .quiz-history-item-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+    }
+
+    .quiz-history-item-score {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--quiz-primary);
+    }
+
+    .quiz-history-item-date {
+        font-size: 14px;
+        color: var(--quiz-text-light);
+        opacity: 0.7;
+    }
+
+    .quiz-history-item-score-detail {
+        padding: 10px 15px;
+        background: rgba(0, 123, 255, 0.1);
+        border-radius: 6px;
+        font-weight: 600;
+        white-space: nowrap;
+        text-align: right;
+    }
+
+    .quiz-history-item-score-detail.perfect {
+        background: rgba(255, 215, 0, 0.2);
+        color: #ffd700;
+    }
+
+    .quiz-history-item-score-detail.excellent {
+        background: rgba(40, 167, 69, 0.2);
+        color: var(--quiz-success);
+    }
+
+    .quiz-history-item-score-detail.good {
+        background: rgba(255, 193, 7, 0.2);
+        color: #ffc107;
+    }
+
+    .quiz-history-stats {
+        background: var(--quiz-bg-light);
+        border: 2px solid var(--quiz-primary);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        text-align: center;
+    }
+
+    .quiz-history-stat-item h3 {
+        font-size: 14px;
+        color: var(--quiz-text-light);
+        margin: 0 0 10px 0;
+        text-transform: uppercase;
+        opacity: 0.7;
+    }
+
+    .quiz-history-stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--quiz-primary);
+    }
+
+    @media (max-width: 576px) {
+        .quiz-history-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .quiz-history-title {
+            font-size: 28px;
+        }
+
+        .quiz-history-back-btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .quiz-history-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .quiz-history-item-score-detail {
+            width: 100%;
+            text-align: left;
+        }
+
+        .quiz-history-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .quiz-history-empty {
+            padding: 40px 20px;
+        }
+
+        .quiz-history-empty-icon {
+            font-size: 60px;
+        }
+
+        .quiz-history-empty-text {
+            font-size: 16px;
+        }
+    }
+</style>
+
+<div class="quiz-history-container">
+    <div class="quiz-history-wrapper">
+        <div class="quiz-history-header">
+            <h1 class="quiz-history-title">
+                <i class="fas fa-history"></i> Quiz History
+            </h1>
+            <a href="@Url.Action("Index", "Quiz")" class="quiz-history-back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Quiz
+            </a>
+        </div>
+
+        @if (Model.Count > 0)
+        {
+            <div class="quiz-history-stats">
+                <div class="quiz-history-stat-item">
+                    <h3>Total Attempts</h3>
+                    <div class="quiz-history-stat-value">@Model.Count</div>
+                </div>
+                <div class="quiz-history-stat-item">
+                    <h3>Best Score</h3>
+                    <div class="quiz-history-stat-value">@Model.Max(a => a.Score)/@(Model.First().TotalQuestions)</div>
+                </div>
+                <div class="quiz-history-stat-item">
+                    <h3>Average Score</h3>
+                    <div class="quiz-history-stat-value">@Math.Round(Model.Average(a => a.Score), 1)</div>
+                </div>
+            </div>
+
+            <div class="quiz-history-list">
+                @foreach (var attempt in Model)
+                {
+                    var scorePercentage = (attempt.Score * 100) / attempt.TotalQuestions;
+                    var scoreClass = attempt.Score == attempt.TotalQuestions ? "perfect" :
+                                    attempt.Score >= 4 ? "excellent" :
+                                    attempt.Score >= 3 ? "good" : "";
+
+                    <div class="quiz-history-item">
+                        <div class="quiz-history-item-info">
+                            <div class="quiz-history-item-date">
+                                <i class="fas fa-calendar-alt"></i>
+                                @attempt.PlayedAt.ToString("MMMM dd, yyyy - HH:mm:ss")
+                            </div>
+                        </div>
+                        <div class="quiz-history-item-score-detail @scoreClass">
+                            @attempt.Score / @attempt.TotalQuestions
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="quiz-history-empty">
+                <div class="quiz-history-empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <div class="quiz-history-empty-text">
+                    You haven't played any quizzes yet!
+                </div>
+                <a href="@Url.Action("Index", "Quiz")" class="quiz-history-empty-btn">
+                    <i class="fas fa-play"></i> Play Your First Quiz
+                </a>
+            </div>
+        }
+    </div>
+</div>
