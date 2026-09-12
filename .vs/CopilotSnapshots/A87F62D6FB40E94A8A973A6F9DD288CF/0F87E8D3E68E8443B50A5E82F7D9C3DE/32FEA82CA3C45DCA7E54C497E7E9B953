@@ -1,0 +1,201 @@
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using I_HAVE_GAME.Data;
+using I_HAVE_GAME.Models;
+using I_HAVE_GAME.ViewModels;
+using System.Security.Claims;
+
+namespace I_HAVE_GAME.Controllers
+{
+    public class AccountController : Controller
+    {
+        private readonly AppDbContext _dbContext;
+        private readonly PasswordHasher<User> _passwordHasher;
+        private readonly ILogger<AccountController> _logger;
+
+        public AccountController(AppDbContext dbContext, ILogger<AccountController> logger)
+        {
+            _dbContext = dbContext;
+            _passwordHasher = new PasswordHasher<User>();
+            _logger = logger;
+        }
+
+        // GET: /Account/Register
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        // POST: /Account/Register
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Check if username already exists
+            if (_dbContext.Users.Any(u => u.Username == model.Username))
+            {
+                ModelState.AddModelError("Username", "Username is already taken.");
+                return View(model);
+            }
+
+            // Check if email already exists
+            if (_dbContext.Users.Any(u => u.Email == model.Email))
+            {
+                ModelState.AddModelError("Email", "Email is already registered.");
+                return View(model);
+            }
+
+            // Create new user
+            var user = new User
+            {
+                Username = model.Username,
+                Email = model.Email,
+                Role = "User",
+                CreatedAt = DateTime.UtcNow,
+                Nickname = null,
+                MainDevice = null,
+                PasswordHash = "" // Placeholder, will be set by HashPassword
+            };
+
+            // Hash the password
+            user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+
+            // Add to database
+            _dbContext.Users.Add(user);
+            await _dbContext.SaveChangesAsync();
+
+            _logger.LogInformation("User {Username} registered successfully.", user.Username);
+
+            // Automatically log in the user
+            await SignInUser(user);
+
+            // Redirect to onboarding
+            return RedirectToAction("Index", "Onboarding");
+        }
+
+        // GET: /Account/Login
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login(string? returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        // POST: /Account/Login
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Find user by username or email
+            var user = _dbContext.Users.FirstOrDefault(u =>
+                u.Username == model.UsernameOrEmail || u.Email == model.UsernameOrEmail);
+
+            if (user == null)
+            {
+                // Don't reveal whether account exists
+                ModelState.AddModelError(string.Empty, "Invalid username/email or password.");
+                _logger.LogWarning("Login attempt with non-existent credentials: {UsernameOrEmail}", model.UsernameOrEmail);
+                return View(model);
+            }
+
+            // Verify password
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash);
+            if (result == PasswordVerificationResult.Failed)
+            {
+                // Don't reveal whether account exists
+                ModelState.AddModelError(string.Empty, "Invalid username/email or password.");
+                _logger.LogWarning("Login failed for user {Username} - incorrect password.", user.Username);
+                return View(model);
+            }
+
+            _logger.LogInformation("User {Username} logged in successfully.", user.Username);
+
+            // Sign in the user
+            await SignInUser(user, model.RememberMe);
+
+            // Redirect based on role
+            if (user.Role == "Admin")
+            {
+                return RedirectToAction("Index", "Admin");
+            }
+
+            // If user hasn't completed onboarding (Nickname not set), redirect to onboarding
+            if (string.IsNullOrEmpty(user.Nickname))
+            {
+                return RedirectToAction("Index", "Onboarding");
+            }
+
+            // Otherwise redirect to home or return URL
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        // POST: /Account/Logout
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            _logger.LogInformation("User {Username} logged out.", User.FindFirst(ClaimTypes.Name)?.Value);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login");
+        }
+
+        // GET: /Account/AccessDenied
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        // Helper method to sign in user
+        private async Task SignInUser(User user, bool rememberMe = false)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = rememberMe,
+                ExpiresUtc = rememberMe ? DateTimeOffset.UtcNow.AddDays(30) : DateTimeOffset.UtcNow.AddHours(8)
+            };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                authProperties);
+        }
+    }
+}

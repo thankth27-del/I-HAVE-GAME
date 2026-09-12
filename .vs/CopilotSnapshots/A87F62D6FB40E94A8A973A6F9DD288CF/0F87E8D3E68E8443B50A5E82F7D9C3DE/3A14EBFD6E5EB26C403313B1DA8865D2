@@ -1,0 +1,321 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="admin-container">
+    <div class="admin-header">
+        <div class="admin-header-content">
+            <h1 class="admin-title">Admin Dashboard</h1>
+            <p class="admin-welcome">Welcome, @ViewData["AdminUsername"]</p>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="row">
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-content">
+                        <h5 class="card-title">Users</h5>
+                        <p class="card-value">System Management</p>
+                        <a href="#" class="card-link">Manage Users →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="card-content">
+                        <h5 class="card-title">Quiz Questions</h5>
+                        <p class="card-value">Content Management</p>
+                        <a href="#" class="card-link">Manage Questions →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="card-content">
+                        <h5 class="card-title">Game Library</h5>
+                        <p class="card-value">Community Content</p>
+                        <a href="#" class="card-link">View Activity →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="card-content">
+                        <h5 class="card-title">Analytics</h5>
+                        <p class="card-value">Platform Insights</p>
+                        <a href="#" class="card-link">View Stats →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="admin-section">
+                    <h2 class="section-title">Recent Activity</h2>
+                    <div class="activity-placeholder">
+                        <p>No recent activity to display</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="admin-section">
+                    <h2 class="section-title">System Status</h2>
+                    <div class="status-info">
+                        <div class="status-item">
+                            <span class="status-label">Database:</span>
+                            <span class="status-badge status-online">Online</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">API:</span>
+                            <span class="status-badge status-online">Online</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Cache:</span>
+                            <span class="status-badge status-online">Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="admin-section">
+                    <h2 class="section-title">Quick Links</h2>
+                    <div class="quick-links">
+                        <a href="@Url.Action("Index", "Home")" class="quick-link">
+                            <i class="fas fa-home"></i> Back to Home
+                        </a>
+                        <form method="post" asp-action="Logout" asp-controller="Account" style="display:inline;">
+                            <button type="submit" class="quick-link quick-link-danger">
+                                <i class="fas fa-sign-out-alt"></i> Sign Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        padding: 30px 20px;
+    }
+
+    .admin-header {
+        background: linear-gradient(135deg, #7b2cbf 0%, #c77dff 100%);
+        padding: 40px 30px;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        box-shadow: 0 10px 40px rgba(123, 44, 191, 0.3);
+    }
+
+    .admin-header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .admin-title {
+        color: #f0f0f0;
+        font-size: 32px;
+        font-weight: bold;
+        margin: 0 0 10px 0;
+    }
+
+    .admin-welcome {
+        color: #e0aaff;
+        font-size: 16px;
+        margin: 0;
+    }
+
+    .dashboard-content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .dashboard-card {
+        background: #0f3460;
+        border: 2px solid #7b2cbf;
+        border-radius: 12px;
+        padding: 25px;
+        height: 100%;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .dashboard-card:hover {
+        border-color: #c77dff;
+        box-shadow: 0 10px 30px rgba(123, 44, 191, 0.3);
+        transform: translateY(-5px);
+    }
+
+    .card-icon {
+        font-size: 32px;
+        color: #7b2cbf;
+        margin-bottom: 15px;
+    }
+
+    .card-title {
+        color: #e0aaff;
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+
+    .card-value {
+        color: #7b2cbf;
+        font-size: 13px;
+        margin: 0 0 10px 0;
+    }
+
+    .card-link {
+        color: #c77dff;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .card-link:hover {
+        color: #e0aaff;
+    }
+
+    .admin-section {
+        background: #0f3460;
+        border: 2px solid #7b2cbf;
+        border-radius: 12px;
+        padding: 25px;
+    }
+
+    .section-title {
+        color: #e0aaff;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #7b2cbf;
+    }
+
+    .activity-placeholder {
+        text-align: center;
+        padding: 40px 20px;
+        color: #7b2cbf;
+        background: #1a1a2e;
+        border-radius: 8px;
+    }
+
+    .status-info {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .status-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: #1a1a2e;
+        border-radius: 6px;
+        border-left: 3px solid #7b2cbf;
+    }
+
+    .status-label {
+        color: #c77dff;
+        font-weight: 500;
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-online {
+        background-color: rgba(0, 255, 136, 0.2);
+        color: #00ff88;
+    }
+
+    .quick-links {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .quick-link {
+        flex: 1;
+        min-width: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px;
+        background: #1a1a2e;
+        border: 1px solid #7b2cbf;
+        border-radius: 6px;
+        color: #c77dff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .quick-link:hover {
+        background-color: #7b2cbf;
+        color: #f0f0f0;
+        border-color: #c77dff;
+    }
+
+    .quick-link-danger:hover {
+        background-color: #ff006e;
+        color: #f0f0f0;
+        border-color: #ff006e;
+    }
+
+    i {
+        width: 18px;
+        text-align: center;
+    }
+</style>
+<style>
+    @@media (max-width: 768px) {
+        .admin-header {
+            padding: 25px;
+        }
+
+        .admin-title {
+            font-size: 24px;
+        }
+
+        .dashboard-card {
+            padding: 20px;
+        }
+
+        .quick-link {
+            flex: 1 1 100%;
+        }
+    }
+</style>

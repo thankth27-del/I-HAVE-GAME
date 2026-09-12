@@ -1,0 +1,158 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace I_HAVE_GAME.ViewModels
+{
+    /// <summary>
+    /// Search wizard state and results
+    /// NOTE: PlayMode and Budget are stored in the application state but may not be directly filterable by RAWG.
+    /// RAWG provides genre, platform, and release date filtering. Other criteria are informational.
+    /// </summary>
+    public class GameSearchViewModel
+    {
+        // Current step (1-5)
+        public int CurrentStep { get; set; } = 1;
+
+        // Step 1: Genre - Supported by RAWG
+        [Display(Name = "Genre")]
+        public string? SelectedGenre { get; set; }
+
+        // Step 2: Device/Platform - Supported by RAWG
+        [Display(Name = "Device")]
+        public string? SelectedDevice { get; set; }
+
+        // Step 3: Play Mode - Not directly supported by RAWG API
+        // Stored for user selection and future enhancement
+        [Display(Name = "Play Mode")]
+        public string? SelectedPlayMode { get; set; }
+
+        // Step 4: Budget - Not directly supported by RAWG API
+        // Stored for user selection and future enhancement
+        [Display(Name = "Budget")]
+        public string? SelectedBudget { get; set; }
+
+        // Step 5: Era/Release Date - Supported by RAWG via dates parameter
+        [Display(Name = "Era")]
+        public string? SelectedEra { get; set; }
+
+        // Pagination (RAWG uses page-based pagination, 1-indexed)
+        public int CurrentPage { get; set; } = 0;
+        public int PageSize { get; set; } = 20;
+
+        // Results
+        public List<GameResultViewModel> Results { get; set; } = new List<GameResultViewModel>();
+        public int TotalResults { get; set; } = 0;
+
+        // Messages
+        public string? ErrorMessage { get; set; }
+        public string? WarningMessage { get; set; }
+        public bool IsLoading { get; set; }
+
+        // Genre options (mapped to RAWG genre slugs)
+        public static List<DropdownOption> GenreOptions => new List<DropdownOption>
+        {
+            new DropdownOption { Value = "action", Label = "Action" },
+            new DropdownOption { Value = "adventure", Label = "Adventure" },
+            new DropdownOption { Value = "rpg", Label = "RPG" },
+            new DropdownOption { Value = "strategy", Label = "Strategy" },
+            new DropdownOption { Value = "simulation", Label = "Simulation" },
+            new DropdownOption { Value = "sports", Label = "Sports" },
+            new DropdownOption { Value = "racing", Label = "Racing" },
+            new DropdownOption { Value = "shooter", Label = "Shooter" },
+            new DropdownOption { Value = "puzzle", Label = "Puzzle" },
+            new DropdownOption { Value = "platformer", Label = "Platformer" },
+            new DropdownOption { Value = "fighting", Label = "Fighting" },
+            new DropdownOption { Value = "horror", Label = "Horror" },
+            new DropdownOption { Value = "indie", Label = "Indie" },
+            new DropdownOption { Value = "arcade", Label = "Arcade" },
+            new DropdownOption { Value = "casual", Label = "Casual" },
+            new DropdownOption { Value = "massively-multiplayer", Label = "Massively Multiplayer" },
+            new DropdownOption { Value = "card", Label = "Card" },
+            new DropdownOption { Value = "board-games", Label = "Board" },
+            new DropdownOption { Value = "educational", Label = "Educational" },
+            new DropdownOption { Value = "family", Label = "Family" },
+            new DropdownOption { Value = "", Label = "Unlimited" }
+        };
+
+        // Device/Platform options (mapped to RAWG platform IDs)
+        // PC: 4 (Windows), 187 (Web), 18 (macOS) | PlayStation: 18 | Xbox: 1 | Nintendo: 7 | Mobile: 8 (iOS), 14 (Android)
+        public static List<DropdownOption> DeviceOptions => new List<DropdownOption>
+        {
+            new DropdownOption { Value = "4,187,18", Label = "PC" },
+            new DropdownOption { Value = "18", Label = "PlayStation" },
+            new DropdownOption { Value = "1", Label = "Xbox" },
+            new DropdownOption { Value = "7", Label = "Nintendo Switch" },
+            new DropdownOption { Value = "8,14", Label = "Mobile" },
+            new DropdownOption { Value = "", Label = "Unlimited" }
+        };
+
+        // Play Mode options - INFORMATIONAL ONLY
+        // RAWG API does not provide direct single-player vs multiplayer filtering
+        // Development note: These selections are stored but not used for filtering
+        public static List<DropdownOption> PlayModeOptions => new List<DropdownOption>
+        {
+            new DropdownOption { Value = "single", Label = "Single-player" },
+            new DropdownOption { Value = "multi", Label = "Multiplayer" },
+            new DropdownOption { Value = "", Label = "Unlimited" }
+        };
+
+        // Budget options - INFORMATIONAL ONLY
+        // RAWG API does not provide direct free vs paid filtering
+        // Development note: These selections are stored but not used for filtering
+        public static List<DropdownOption> BudgetOptions => new List<DropdownOption>
+        {
+            new DropdownOption { Value = "free", Label = "Free" },
+            new DropdownOption { Value = "paid", Label = "Paid" },
+            new DropdownOption { Value = "", Label = "Unlimited" }
+        };
+
+        // Era/Release Date options (formatted for RAWG dates parameter: YYYY-MM-DD,YYYY-MM-DD)
+        public static List<DropdownOption> EraOptions => new List<DropdownOption>
+        {
+            new DropdownOption { Value = "2020-01-01,2099-12-31", Label = "2020+" },
+            new DropdownOption { Value = "1000-01-01,2019-12-31", Label = "Before 2020" },
+            new DropdownOption { Value = "", Label = "Unlimited" }
+        };
+    }
+
+    /// <summary>
+    /// Dropdown option for UI
+    /// </summary>
+    public class DropdownOption
+    {
+        public string Value { get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Game result to display in search results
+    /// </summary>
+    public class GameResultViewModel
+    {
+        public int Id { get; set; }
+        public string Slug { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string? BackgroundImage { get; set; }
+        public string? ReleasedDate { get; set; }
+        public decimal Rating { get; set; }
+        public int RatingsCount { get; set; }
+        public List<string> Genres { get; set; } = new List<string>();
+        public List<string> Platforms { get; set; } = new List<string>();
+        public List<string> Stores { get; set; } = new List<string>();
+        public string? Description { get; set; }
+    }
+
+    /// <summary>
+    /// Request model for search wizard POST
+    /// </summary>
+    public class GameSearchRequest
+    {
+        public int CurrentStep { get; set; } = 1;
+        public string? SelectedGenre { get; set; }
+        public string? SelectedDevice { get; set; }
+        public string? SelectedPlayMode { get; set; }
+        public string? SelectedBudget { get; set; }
+        public string? SelectedEra { get; set; }
+        public int CurrentPage { get; set; } = 0;
+        public int PageSize { get; set; } = 20;
+    }
+}
