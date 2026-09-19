@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using I_HAVE_GAME.Models;
 
 namespace I_HAVE_GAME.Data
@@ -14,8 +14,6 @@ namespace I_HAVE_GAME.Data
         public DbSet<SearchHistory> SearchHistories { get; set; } = null!;
         public DbSet<QuizQuestion> QuizQuestions { get; set; } = null!;
         public DbSet<QuizAttempt> QuizAttempts { get; set; } = null!;
-        // Games collection for internal search/index
-        public DbSet<Models.Game> Games { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,7 +27,7 @@ namespace I_HAVE_GAME.Data
                 entity.HasIndex(u => u.Username).IsUnique();
                 entity.Property(u => u.Email).IsRequired();
                 entity.HasIndex(u => u.Email).IsUnique();
-                entity.Property(u => u.PasswordHash).IsRequired();แ
+                entity.Property(u => u.PasswordHash).IsRequired();
                 entity.Property(u => u.Role).IsRequired();
                 entity.Property(u => u.CreatedAt).IsRequired();
                 entity.Property(u => u.Nickname).IsRequired(false);

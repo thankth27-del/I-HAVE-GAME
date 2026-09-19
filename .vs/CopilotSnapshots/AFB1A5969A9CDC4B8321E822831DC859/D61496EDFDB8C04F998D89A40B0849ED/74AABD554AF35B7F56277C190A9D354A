@@ -1,4 +1,4 @@
-using I_HAVE_GAME.Models;
+﻿using I_HAVE_GAME.Models;
 
 namespace I_HAVE_GAME.Data
 {
@@ -231,104 +231,6 @@ namespace I_HAVE_GAME.Data
                     Rating = 4.9,
                     Price = 9.99m,
                     ReleaseDate = new DateTime(2011,4,19),
-                    AddedAt = DateTime.UtcNow
-                },
-                new Models.Game
-                {
-                    Title = "Hollow Knight",
-                    Slug = "hollow-knight",
-                    Description = "A challenging Metroidvania with a beautiful hand-drawn world.",
-                    Genres = "Action,Metroidvania,Indie",
-                    Platforms = "PC, Nintendo Switch, PS4, Xbox One",
-                    Tags = "metroidvania,exploration,challenging",
-                    ImageUrl = "https://example.com/images/hollowknight.jpg",
-                    Rating = 4.8,
-                    Price = 14.99m,
-                    ReleaseDate = new DateTime(2017,2,24),
-                    AddedAt = DateTime.UtcNow
-                },
-                new Models.Game
-                {
-                    Title = "Minecraft",
-                    Slug = "minecraft",
-                    Description = "A sandbox game about placing blocks and going on adventures.",
-                    Genres = "Sandbox,Survival,Indie",
-                    Platforms = "PC, Console, Mobile",
-                    Tags = "sandbox,building,creative,survival",
-                    ImageUrl = "https://example.com/images/minecraft.jpg",
-                    Rating = 4.5,
-                    Price = 26.95m,
-                    ReleaseDate = new DateTime(2011,11,18),
-                    AddedAt = DateTime.UtcNow
-                },
-                new Models.Game
-                {
-                    Title = "The Witcher 3: Wild Hunt",
-                    Slug = "witcher-3",
-                    Description = "An open-world RPG following Geralt of Rivia.",
-                    Genres = "RPG,Open World,Action",
-                    Platforms = "PC, PS4, PS5, Xbox One, Xbox Series X",
-                    Tags = "rpg,story-driven,open-world",
-                    ImageUrl = "https://example.com/images/witcher3.jpg",
-                    Rating = 4.9,
-                    Price = 39.99m,
-                    ReleaseDate = new DateTime(2015,5,19),
-                    AddedAt = DateTime.UtcNow
-                },
-                new Models.Game
-                {
-                    Title = "DOOM Eternal",
-                    Slug = "doom-eternal",
-                    Description = "A fast-paced first-person shooter with intense combat.",
-                    Genres = "Shooter,Action",
-                    Platforms = "PC, PS4, PS5, Xbox One, Xbox Series X, Nintendo Switch",
-                    Tags = "fps,action,fast-paced",
-                    ImageUrl = "https://example.com/images/doometernal.jpg",
-                    Rating = 4.4,
-                    Price = 59.99m,
-                    ReleaseDate = new DateTime(2020,3,20),
-                    AddedAt = DateTime.UtcNow
-                },
-                new Models.Game
-                {
-                    Title = "God of War (2018)",
-                    Slug = "god-of-war-2018",
-                    Description = "A narrative-driven action game following Kratos and Atreus.",
-                    Genres = "Action,Adventure",
-                    Platforms = "PS4, PS5, PC",
-                    Tags = "action,narrative,adventure",
-                    ImageUrl = "https://example.com/images/godofwar.jpg",
-                    Rating = 4.9,
-                    Price = 49.99m,
-                    ReleaseDate = new DateTime(2018,4,20),
-                    AddedAt = DateTime.UtcNow
-                },
-                new Models.Game
-                {
-                    Title = "Among Us",
-                    Slug = "among-us",
-                    Description = "A social deduction multiplayer game.",
-                    Genres = "Multiplayer,Party,Indie",
-                    Platforms = "PC, Mobile, Nintendo Switch, PS4, PS5, Xbox",
-                    Tags = "multiplayer,social-deduction,party",
-                    ImageUrl = "https://example.com/images/amongus.jpg",
-                    Rating = 4.0,
-                    Price = 4.99m,
-                    ReleaseDate = new DateTime(2018,6,15),
-                    AddedAt = DateTime.UtcNow
-                },
-                new Models.Game
-                {
-                    Title = "Terraria",
-                    Slug = "terraria",
-                    Description = "A 2D sandbox adventure game with crafting and exploration.",
-                    Genres = "Sandbox,Adventure,Indie",
-                    Platforms = "PC, Console, Mobile",
-                    Tags = "sandbox,crafting,exploration",
-                    ImageUrl = "https://example.com/images/terraria.jpg",
-                    Rating = 4.3,
-                    Price = 9.99m,
-                    ReleaseDate = new DateTime(2011,5,16),
                     AddedAt = DateTime.UtcNow
                 }
             };

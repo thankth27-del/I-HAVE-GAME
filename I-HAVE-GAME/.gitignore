@@ -6,3 +6,11 @@ obj/
 *.db
 *.db-shm
 *.db-wal
+*.log
+.env
+.vscode/
+.idea/
+publish/
+**/publish/
+*.zip
+.DS_Store

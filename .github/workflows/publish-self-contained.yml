@@ -1,0 +1,36 @@
+name: Build Self-contained Artifacts
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runtime: [win-x64, linux-x64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore I-HAVE-GAME.csproj
+
+      - name: Publish self-contained
+        run: |
+          dotnet publish I-HAVE-GAME.csproj -c Release -r ${{ matrix.runtime }} \
+            --self-contained true /p:PublishSingleFile=true /p:PublishTrimmed=false -o publish/${{ matrix.runtime }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: I-HAVE-GAME-${{ matrix.runtime }}
+          path: publish/${{ matrix.runtime }}

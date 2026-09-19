@@ -1,8 +1,7 @@
-using I_HAVE_GAME.Data;
+﻿using I_HAVE_GAME.Data;
 using I_HAVE_GAME.Models.Rawg;
 using I_HAVE_GAME.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +12,6 @@ if (builder.Environment.IsDevelopment())
     builder.Configuration.AddUserSecrets<Program>();
 }
 builder.Services.AddControllersWithViews();
-// Add Razor Pages support so we can add Pages/Search and other admin pages
-builder.Services.AddRazorPages();
 
 // Add Session
 builder.Services.AddDistributedMemoryCache();
@@ -51,8 +48,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
         options.Cookie.HttpOnly = true;
-        // Use SameAsRequest so cookies work behind TLS-terminating reverse proxies (Render, etc.)
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.Cookie.SameSite = SameSiteMode.Strict;
     });
 
@@ -74,19 +70,7 @@ using (var scope = app.Services.CreateScope())
     {
         Console.WriteLine($"Error applying migrations: {ex.Message}");
     }
-
-    // If migrations were not applied or no migrations exist, ensure database is created so seeding can run.
-    try
-    {
-        dbContext.Database.EnsureCreated();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error ensuring database created: {ex.Message}");
-    }
-
     DbSeeder.SeedQuizQuestions(dbContext);
-    DbSeeder.SeedGames(dbContext);
 }
 
 // Configure the HTTP request pipeline.
@@ -96,16 +80,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-// Configure forwarded headers so app can correctly determine request scheme when behind a proxy (Render)
-var forwardedOptions = new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-};
-// Clear known networks/proxies so the proxy headers from the platform are accepted
-forwardedOptions.KnownNetworks.Clear();
-forwardedOptions.KnownProxies.Clear();
-app.UseForwardedHeaders(forwardedOptions);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -119,8 +93,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-// Map Razor Pages
-app.MapRazorPages();
 
 app.Run();

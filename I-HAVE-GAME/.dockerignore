@@ -1,0 +1,21 @@
+bin/
+obj/
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+*.db
+*.db-shm
+*.db-wal
+**/publish/
+*.log
+*.zip
+.vscode/
+.env
+.DS_Store
+.idea/
+
+# Dockerfile artifacts
+**/*.tar
+
