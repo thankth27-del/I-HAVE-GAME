@@ -1,8 +1,7 @@
-@page
+﻿@page
 @model I_HAVE_GAME.Pages.SearchModel
 @{
     ViewData["Title"] = "Search Games";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <link rel="stylesheet" href="~/css/search-page.css" />

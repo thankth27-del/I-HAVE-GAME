@@ -1,4 +1,4 @@
-/* Account Pages Styles */
+﻿/* Account Pages Styles */
 
 .auth-container {
   min-height: 100vh;
@@ -198,9 +198,9 @@
 
 /* Button Styling */
 .btn-auth {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  background-color: var(--accent-primary);
   border: none;
-  color: #0a0e27;
+  color: white;
   font-weight: 700;
   padding: 14px 24px;
   margin-top: 10px;
@@ -211,24 +211,22 @@
   letter-spacing: 0.5px;
   cursor: pointer;
   width: 100%;
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
 }
 
 .btn-auth:hover {
-  background: linear-gradient(135deg, var(--accent-primary-hover) 0%, #9500c4 100%);
-  color: #0a0e27;
-  transform: translateY(-3px);
-  box-shadow: 0 0 30px rgba(0, 212, 255, 0.6), 0 0 50px rgba(183, 64, 212, 0.4);
+  background-color: var(--accent-primary-hover);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 102, 204, 0.3);
 }
 
 .btn-auth:active {
-  transform: translateY(-1px);
+  transform: translateY(0);
 }
 
 .btn-auth:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
 /* Footer Links */
@@ -251,14 +249,11 @@
   font-weight: 700;
   transition: all 0.3s ease;
   display: inline-block;
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
 }
 
 .auth-footer a:hover {
   color: var(--accent-primary-hover);
-  text-decoration: none;
-  text-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
-  transform: scale(1.05);
+  text-decoration: underline;
 }
 
 /* Alert Messages */
@@ -295,24 +290,40 @@
 }
 
 .alert-danger {
-  background-color: rgba(255, 0, 110, 0.1);
-  border-color: #ff006e;
-  color: #ff006e;
-  box-shadow: 0 0 15px rgba(255, 0, 110, 0.2);
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  color: #c0392b;
+}
+
+.alert-danger::before {
+  content: '⚠️';
+  font-size: 18px;
+  display: inline-block;
 }
 
 .alert-success {
-  background-color: rgba(57, 255, 20, 0.1);
-  border-color: #39ff14;
-  color: #39ff14;
-  box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+  background-color: rgba(76, 175, 80, 0.1);
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+.alert-success::before {
+  content: '✓';
+  font-size: 18px;
+  display: inline-block;
+  color: #4caf50;
 }
 
 .alert-info {
-  background-color: rgba(0, 212, 255, 0.1);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+  background-color: rgba(52, 152, 219, 0.1);
+  border-color: #3498db;
+  color: #2980b9;
+}
+
+.alert-info::before {
+  content: 'ℹ';
+  font-size: 18px;
+  display: inline-block;
 }
 
 /* Password Strength Indicator */

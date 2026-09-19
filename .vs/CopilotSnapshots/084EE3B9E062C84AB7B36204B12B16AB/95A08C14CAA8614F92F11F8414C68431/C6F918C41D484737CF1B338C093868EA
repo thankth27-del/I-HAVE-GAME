@@ -1,4 +1,4 @@
-/* Theme Color Variables - Dark Gaming Theme */
+﻿/* Theme Color Variables - Dark Gaming Theme */
 :root {
   /* Gaming Dark Mode Colors - Default */
   --bg-primary: #0a0e27;

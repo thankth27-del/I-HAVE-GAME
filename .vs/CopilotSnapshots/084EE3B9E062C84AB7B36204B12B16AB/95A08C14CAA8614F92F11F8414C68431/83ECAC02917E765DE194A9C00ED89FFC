@@ -1,14 +1,13 @@
-/* Account Pages Styles */
+﻿/* Account Pages Styles */
 
 .auth-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0e27 0%, #1d2d5f 50%, #261552 100%);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   position: relative;
-  overflow: hidden;
 }
 
 .auth-container::before {
@@ -18,31 +17,28 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
-              radial-gradient(circle at 80% 80%, rgba(183, 64, 212, 0.15) 0%, transparent 50%),
-              radial-gradient(circle at -10% -10%, rgba(57, 255, 20, 0.1) 0%, transparent 40%);
+  background: radial-gradient(circle at 20% 50%, rgba(0, 102, 204, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(0, 128, 255, 0.1) 0%, transparent 50%);
   pointer-events: none;
-  animation: float 20s infinite ease-in-out;
 }
 
 .auth-card {
-  background: linear-gradient(135deg, #141b34 0%, rgba(29, 45, 95, 0.6) 100%);
+  background-color: var(--card-bg);
   border: 2px solid var(--card-border);
   border-radius: 16px;
   padding: 40px;
   width: 100%;
   max-width: 450px;
-  box-shadow: var(--shadow-glow), 0 0 40px rgba(0, 212, 255, 0.2), inset 0 1px 0 rgba(0, 212, 255, 0.1);
+  box-shadow: 0 8px 24px var(--shadow-medium);
   position: relative;
   z-index: 1;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.3s ease;
   animation: slideUp 0.5s ease;
 }
 
 .auth-card:hover {
-  box-shadow: var(--shadow-glow), 0 0 50px rgba(183, 64, 212, 0.3), 0 0 30px rgba(0, 212, 255, 0.3), inset 0 1px 0 rgba(0, 212, 255, 0.2);
+  box-shadow: 0 12px 32px var(--shadow-medium);
   border-color: var(--accent-primary);
-  transform: translateY(-5px);
 }
 
 @keyframes slideUp {
@@ -66,13 +62,6 @@
   color: var(--accent-primary);
   margin-bottom: 15px;
   display: block;
-  filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.4));
-  animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
 }
 
 .auth-title {
@@ -81,7 +70,6 @@
   font-weight: 700;
   margin-bottom: 8px;
   letter-spacing: 1px;
-  text-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
 }
 
 .auth-subtitle {
@@ -117,10 +105,10 @@
 }
 
 .form-control:focus {
-  background-color: rgba(22, 33, 62, 0.8);
+  background-color: var(--bg-primary);
   border-color: var(--accent-primary);
   color: var(--text-primary);
-  box-shadow: 0 0 0 0.3rem rgba(0, 212, 255, 0.25), inset 0 0 10px rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.15);
   outline: none;
 }
 
@@ -151,12 +139,11 @@
 .form-check-input:checked {
   background-color: var(--accent-primary);
   border-color: var(--accent-primary);
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
 }
 
 .form-check-input:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 0.3rem rgba(0, 212, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.15);
 }
 
 .form-check-label {
@@ -166,13 +153,12 @@
 }
 
 .validation-error {
-  color: #ff006e;
+  color: #e74c3c;
   display: block;
   margin-top: 6px;
   font-size: 12px;
   font-weight: 600;
   animation: slideDown 0.3s ease;
-  text-shadow: 0 0 5px rgba(255, 0, 110, 0.3);
 }
 
 @keyframes slideDown {
@@ -187,20 +173,18 @@
 }
 
 .text-danger {
-  color: #ff006e;
-  text-shadow: 0 0 5px rgba(255, 0, 110, 0.3);
+  color: #e74c3c;
 }
 
 .text-success {
-  color: #39ff14;
-  text-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
+  color: #4caf50;
 }
 
 /* Button Styling */
 .btn-auth {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  background-color: var(--accent-primary);
   border: none;
-  color: #0a0e27;
+  color: white;
   font-weight: 700;
   padding: 14px 24px;
   margin-top: 10px;
@@ -211,24 +195,22 @@
   letter-spacing: 0.5px;
   cursor: pointer;
   width: 100%;
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
 }
 
 .btn-auth:hover {
-  background: linear-gradient(135deg, var(--accent-primary-hover) 0%, #9500c4 100%);
-  color: #0a0e27;
-  transform: translateY(-3px);
-  box-shadow: 0 0 30px rgba(0, 212, 255, 0.6), 0 0 50px rgba(183, 64, 212, 0.4);
+  background-color: var(--accent-primary-hover);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 102, 204, 0.3);
 }
 
 .btn-auth:active {
-  transform: translateY(-1px);
+  transform: translateY(0);
 }
 
 .btn-auth:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
 /* Footer Links */
@@ -251,14 +233,11 @@
   font-weight: 700;
   transition: all 0.3s ease;
   display: inline-block;
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
 }
 
 .auth-footer a:hover {
   color: var(--accent-primary-hover);
-  text-decoration: none;
-  text-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
-  transform: scale(1.05);
+  text-decoration: underline;
 }
 
 /* Alert Messages */
@@ -295,24 +274,40 @@
 }
 
 .alert-danger {
-  background-color: rgba(255, 0, 110, 0.1);
-  border-color: #ff006e;
-  color: #ff006e;
-  box-shadow: 0 0 15px rgba(255, 0, 110, 0.2);
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  color: #c0392b;
+}
+
+.alert-danger::before {
+  content: '⚠️';
+  font-size: 18px;
+  display: inline-block;
 }
 
 .alert-success {
-  background-color: rgba(57, 255, 20, 0.1);
-  border-color: #39ff14;
-  color: #39ff14;
-  box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+  background-color: rgba(76, 175, 80, 0.1);
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+.alert-success::before {
+  content: '✓';
+  font-size: 18px;
+  display: inline-block;
+  color: #4caf50;
 }
 
 .alert-info {
-  background-color: rgba(0, 212, 255, 0.1);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+  background-color: rgba(52, 152, 219, 0.1);
+  border-color: #3498db;
+  color: #2980b9;
+}
+
+.alert-info::before {
+  content: 'ℹ';
+  font-size: 18px;
+  display: inline-block;
 }
 
 /* Password Strength Indicator */

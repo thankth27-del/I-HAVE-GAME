@@ -1,4 +1,4 @@
-@model GameSearchViewModel
+﻿@model GameSearchViewModel
 @using I_HAVE_GAME.ViewModels
 
 @{

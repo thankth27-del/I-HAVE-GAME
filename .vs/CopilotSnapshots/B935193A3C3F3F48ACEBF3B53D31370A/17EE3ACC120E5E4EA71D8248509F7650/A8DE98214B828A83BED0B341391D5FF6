@@ -1,9 +1,9 @@
-@model GameSearchViewModel
+﻿@model GameSearchViewModel
 @using I_HAVE_GAME.ViewModels
 
 @{
     ViewData["Title"] = "ค้นหาเกมใหม่";
-    Layout = "_Layout";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <link rel="stylesheet" href="~/css/search-page.css" asp-append-version="true" />

@@ -1,4 +1,4 @@
-/* Theme Color Variables - Dark Gaming Theme */
+﻿/* Theme Color Variables - Dark Gaming Theme */
 :root {
   /* Gaming Dark Mode Colors - Default */
   --bg-primary: #0a0e27;
@@ -329,37 +329,33 @@ body {
 /* Alert Styling */
 .alert {
   border-radius: 8px;
-  border: 1.5px solid;
+  border: 1px solid;
   padding: 15px 20px;
   animation: slideDown 0.3s ease;
 }
 
 .alert-success {
-  background-color: rgba(57, 255, 20, 0.1);
-  border-color: #39ff14;
-  color: #39ff14;
-  box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+  background-color: rgba(76, 175, 80, 0.1);
+  border-color: #4caf50;
+  color: #2e7d32;
 }
 
 .alert-danger {
-  background-color: rgba(255, 0, 110, 0.1);
-  border-color: #ff006e;
-  color: #ff006e;
-  box-shadow: 0 0 15px rgba(255, 0, 110, 0.2);
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  color: #c0392b;
 }
 
 .alert-warning {
   background-color: rgba(243, 156, 18, 0.1);
   border-color: #f39c12;
-  color: #f39c12;
-  box-shadow: 0 0 15px rgba(243, 156, 18, 0.2);
+  color: #d68910;
 }
 
 .alert-info {
-  background-color: rgba(0, 212, 255, 0.1);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+  background-color: rgba(52, 152, 219, 0.1);
+  border-color: #3498db;
+  color: #2980b9;
 }
 
 /* Button Enhancements */

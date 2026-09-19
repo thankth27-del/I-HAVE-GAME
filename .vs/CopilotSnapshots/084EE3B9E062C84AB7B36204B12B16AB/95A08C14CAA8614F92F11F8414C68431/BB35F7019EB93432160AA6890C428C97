@@ -1,4 +1,4 @@
-/* Account Pages Styles */
+﻿/* Account Pages Styles */
 
 .auth-container {
   min-height: 100vh;
@@ -309,10 +309,15 @@
 }
 
 .alert-info {
-  background-color: rgba(0, 212, 255, 0.1);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+  background-color: rgba(52, 152, 219, 0.1);
+  border-color: #3498db;
+  color: #2980b9;
+}
+
+.alert-info::before {
+  content: 'ℹ';
+  font-size: 18px;
+  display: inline-block;
 }
 
 /* Password Strength Indicator */
