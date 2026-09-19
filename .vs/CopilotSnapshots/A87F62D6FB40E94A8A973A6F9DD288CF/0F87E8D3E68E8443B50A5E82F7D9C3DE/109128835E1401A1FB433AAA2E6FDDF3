@@ -1,4 +1,0 @@
-﻿@using I_HAVE_GAME
-@using I_HAVE_GAME.Models
-@using I_HAVE_GAME.ViewModels
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

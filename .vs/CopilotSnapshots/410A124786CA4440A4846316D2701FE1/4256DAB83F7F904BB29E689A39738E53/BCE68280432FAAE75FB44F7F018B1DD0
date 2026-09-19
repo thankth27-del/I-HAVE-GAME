@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model I_HAVE_GAME.Pages.SearchModel
 @{
     ViewData["Title"] = "Search Games";
@@ -135,11 +135,10 @@
                                 <!-- Game Image -->
                                 <div class="game-image position-relative" style="width: 140px; flex-shrink: 0; overflow: hidden;">
                                     <img 
-                                        src="@(string.IsNullOrWhiteSpace(g.ImageUrl) ? "/images/placeholder.svg" : g.ImageUrl)" 
+                                        src="@(string.IsNullOrWhiteSpace(g.ImageUrl) ? "/images/placeholder.png" : g.ImageUrl)" 
                                         alt="@g.Title" 
                                         class="h-100" 
                                         style="width: 100%; object-fit: cover; transition: transform 0.3s ease;"
-                                        onerror="this.src='/images/placeholder.svg'"
                                     />
                                     <div class="position-absolute top-0 end-0 m-2" style="background: var(--accent-primary); color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px;">
                                         ⭐ @(g.Rating?.ToString("0.0") ?? "—")

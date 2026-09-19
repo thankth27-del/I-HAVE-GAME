@@ -1,0 +1,54 @@
+﻿@page
+@model I_HAVE_GAME.Pages.SearchModel
+@{
+    ViewData["Title"] = "Search Games";
+}
+
+<h2>Search Games</h2>
+<form method="get" class="mb-3">
+    <div class="row g-2">
+        <div class="col-md-4">
+            <input class="form-control" type="text" name="q" value="@Model.q" placeholder="Search title, tags, description..." />
+        </div>
+        <div class="col-md-2">
+            <input class="form-control" type="text" name="genre" value="@Model.genre" placeholder="Genre" />
+        </div>
+        <div class="col-md-2">
+            <input class="form-control" type="text" name="platform" value="@Model.platform" placeholder="Platform" />
+        </div>
+        <div class="col-md-2">
+            <input class="form-control" type="number" step="0.1" name="minRating" value="@(Model.minRating?.ToString() ?? string.Empty)" placeholder="Min rating" />
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
+@if (Model.Results?.Any() == true)
+{
+    <div class="list-group">
+        @foreach (var g in Model.Results)
+        {
+            <a class="list-group-item list-group-item-action d-flex align-items-center" href="#">
+                <img src="@(string.IsNullOrWhiteSpace(g.ImageUrl) ? "/images/placeholder.png" : g.ImageUrl)" alt="cover" style="width:64px;height:64px;object-fit:cover;margin-right:12px;border-radius:6px" />
+                <div>
+                    <div class="fw-bold">@g.Title</div>
+                    <div class="text-muted">@g.Genres ?? "" • @g.Platforms ?? ""</div>
+                    <div class="small text-secondary">Rating: @(g.Rating?.ToString("0.0") ?? "—") • Price: @(g.Price?.ToString("C") ?? "—")</div>
+                </div>
+            </a>
+        }
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(Model.q) || !string.IsNullOrWhiteSpace(Model.genre) || !string.IsNullOrWhiteSpace(Model.platform) || Model.minRating != null)
+{
+    <div class="alert alert-warning">No results found.</div>
+}
+
+<style>
+    /* small responsive tweak */
+    @@media (max-width: 576px) {
+        img { width:48px !important; height:48px !important; }
+    }
+</style>

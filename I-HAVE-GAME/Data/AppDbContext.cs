@@ -29,7 +29,7 @@ namespace I_HAVE_GAME.Data
                 entity.HasIndex(u => u.Username).IsUnique();
                 entity.Property(u => u.Email).IsRequired();
                 entity.HasIndex(u => u.Email).IsUnique();
-                entity.Property(u => u.PasswordHash).IsRequired();แ
+                entity.Property(u => u.PasswordHash).IsRequired();
                 entity.Property(u => u.Role).IsRequired();
                 entity.Property(u => u.CreatedAt).IsRequired();
                 entity.Property(u => u.Nickname).IsRequired(false);

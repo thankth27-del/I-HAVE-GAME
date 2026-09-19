@@ -65,28 +65,24 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    // Apply pending migrations
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
     try
     {
+        logger.LogInformation("Applying pending migrations...");
         dbContext.Database.Migrate();
+
+        logger.LogInformation("Seeding database...");
+        DbSeeder.SeedQuizQuestions(dbContext);
+        DbSeeder.SeedGames(dbContext);
+
+        logger.LogInformation("Database ready.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Error applying migrations: {ex.Message}");
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+        throw;
     }
-
-    // If migrations were not applied or no migrations exist, ensure database is created so seeding can run.
-    try
-    {
-        dbContext.Database.EnsureCreated();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error ensuring database created: {ex.Message}");
-    }
-
-    DbSeeder.SeedQuizQuestions(dbContext);
-    DbSeeder.SeedGames(dbContext);
 }
 
 // Configure the HTTP request pipeline.

@@ -1,4 +1,4 @@
-/* Theme Color Variables */
+﻿/* Theme Color Variables */
 :root {
   /* Light Mode Colors */
   --bg-primary: #ffffff;

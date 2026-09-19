@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140">
+  <defs>
+	<style>
+	  .placeholder-bg { fill: #e0e0e0; }
+	  .placeholder-text { fill: #999; font-size: 12px; text-anchor: middle; font-family: Arial, sans-serif; }
+	  .placeholder-icon { fill: #999; }
+	</style>
+  </defs>
+  <rect class="placeholder-bg" width="140" height="140"/>
+  <text class="placeholder-text" x="70" y="65">No Image</text>
+  <g class="placeholder-icon" transform="translate(70, 95)">
+	<path d="M -10 5 L 0 -5 L 10 5 L 5 5 L 5 10 L -5 10 L -5 5 Z"/>
+  </g>
+</svg>

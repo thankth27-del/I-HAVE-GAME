@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model I_HAVE_GAME.Pages.SearchModel
 @{
     ViewData["Title"] = "Search Games";
