@@ -4,10 +4,10 @@ namespace I_HAVE_GAME.ViewModels
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Username or email is required.")]
+        [Required(ErrorMessage = "กรุณากรอกชื่อผู้ใช้หรืออีเมล")]
         public string UsernameOrEmail { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required.")]
+        [Required(ErrorMessage = "กรุณากรอกรหัสผ่าน")]
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
 

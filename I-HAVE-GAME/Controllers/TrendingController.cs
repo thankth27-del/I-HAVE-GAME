@@ -9,7 +9,8 @@ namespace I_HAVE_GAME.Controllers
     /// Controller for trending/popular games
     /// Shows weekly trending games from RAWG API
     /// </summary>
-    [Authorize]
+    // ฟีเจอร์นี้ใช้ RAWG ซึ่งโปรเจกต์เปลี่ยนมาใช้คลังเกมภายในแล้ว
+    [NonController]
     public class TrendingController : Controller
     {
         private readonly IRawgService _rawgService;

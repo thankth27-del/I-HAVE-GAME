@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -209,7 +209,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm">
+        <nav class="navbar navbar-expand-lg navbar-toggleable-lg">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     <i class="fas fa-gamepad"></i> I-HAVE-GAME
@@ -218,38 +218,23 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Catalog" asp-action="Index">
+                                <i class="fas fa-compass"></i> สำรวจเกม
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="GameUpdates" asp-action="Calendar">
+                                <i class="fas fa-calendar-days"></i> ปฏิทินเกม
+                            </a>
+                        </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
-                                    <i class="fas fa-home"></i> หน้าแรก
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Search" asp-action="Index">
-                                    <i class="fas fa-search"></i> ค้นหาเกม
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Recommendations" asp-action="Index">
-                                    <i class="fas fa-sparkles"></i> เกมแนะนำ
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Trending" asp-action="Index">
-                                    <i class="fas fa-fire"></i> เกมยอดนิยม
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Compare" asp-action="Index">
-                                    <i class="fas fa-code-compare"></i> เปรียบเทียบเกม
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Profile" asp-action="Index">
-                                    <i class="fas fa-user"></i> โปรไฟล์
+                                <a class="nav-link" href="/Matcher">
+                                    <i class="fas fa-wand-magic-sparkles"></i> ช่วยเลือกเกม
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -258,18 +243,8 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Quiz" asp-action="Index">
-                                    <i class="fas fa-gamepad"></i> ทายชื่อเกม
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="SearchHistory" asp-action="Index">
-                                    <i class="fas fa-history"></i> ประวัติการค้นหา
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
-                                    <i class="fas fa-shield-alt"></i> ความเป็นส่วนตัว
+                                <a class="nav-link" asp-controller="PetGame" asp-action="Index">
+                                    <i class="fas fa-cubes"></i> Block Burst
                                 </a>
                             </li>
 
@@ -277,7 +252,7 @@
                             {
                                 <li class="nav-item admin-nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">
-                                        <i class="fas fa-cog"></i> รายการจัดการ
+                                        <i class="fas fa-cog"></i> จัดการระบบ
                                     </a>
                                 </li>
                             }
@@ -285,9 +260,6 @@
                     </ul>
 
                     <div class="auth-nav">
-                        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle theme">
-                            <i class="fas fa-moon"></i>
-                        </button>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <div class="user-info">
@@ -323,62 +295,21 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="page-shell">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - I-HAVE-GAME - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div class="footer-inner">
+            &copy; 2026 - I-HAVE-GAME - <a asp-area="" asp-controller="Home" asp-action="Privacy">นโยบายความเป็นส่วนตัว</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <script>
-        // Theme Toggle Script  
-        (function() {
-            const themeToggle = document.getElementById('themeToggle');
-            const htmlElement = document.documentElement;
-            const THEME_KEY = 'ihavegame-theme';
-
-            // Initialize theme from localStorage or default to light mode
-            function initTheme() {
-                const savedTheme = localStorage.getItem(THEME_KEY);
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const isDarkMode = savedTheme ? savedTheme === 'dark' : prefersDark;
-
-                applyTheme(isDarkMode);
-            }
-
-            // Apply theme and update UI
-            function applyTheme(isDarkMode) {
-                if (isDarkMode) {
-                    htmlElement.classList.add('dark-mode');
-                    if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                    localStorage.setItem(THEME_KEY, 'dark');
-                } else {
-                    htmlElement.classList.remove('dark-mode');
-                    if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                    localStorage.setItem(THEME_KEY, 'light');
-                }
-            }
-
-            // Toggle theme on button click
-            if (themeToggle) {
-                themeToggle.addEventListener('click', function() {
-                    const isDarkMode = htmlElement.classList.contains('dark-mode');
-                    applyTheme(!isDarkMode);
-                });
-            }
-
-            // Initialize on page load
-            initTheme();
-        })();
-    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -336,5 +336,31 @@ namespace I_HAVE_GAME.Data
             context.Games.AddRange(games);
             context.SaveChanges();
         }
+
+        public static void SeedGameReleaseTimelines(AppDbContext context)
+        {
+            var gamesWithoutTimeline = context.Games
+                .Where(game => game.ReleaseDate.HasValue && !context.GameUpdates.Any(update => update.GameId == game.Id))
+                .ToList();
+
+            if (gamesWithoutTimeline.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var game in gamesWithoutTimeline)
+            {
+                context.GameUpdates.Add(new GameUpdate
+                {
+                    GameId = game.Id,
+                    Title = "วางจำหน่ายแล้ว",
+                    Description = $"{game.Title} เปิดตัวและเริ่มให้ผู้เล่นได้สัมผัสเกมเป็นครั้งแรก",
+                    PublishedAt = game.ReleaseDate!.Value
+                });
+                game.LastUpdatedAt = game.ReleaseDate;
+            }
+
+            context.SaveChanges();
+        }
     }
 }

@@ -25,6 +25,12 @@ namespace I_HAVE_GAME.ViewModels
         /// </summary>
         public string MainDevice { get; set; } = string.Empty;
 
+        public string? AvatarUrl { get; set; }
+        public string? Bio { get; set; }
+        public string? FavoriteGenresText { get; set; }
+        public IFormFile? AvatarImage { get; set; }
+        public List<AchievementViewModel> Achievements { get; set; } = new();
+
         /// <summary>
         /// Account creation date
         /// </summary>
@@ -100,6 +106,14 @@ namespace I_HAVE_GAME.ViewModels
         /// Count of games in this genre
         /// </summary>
         public int Count { get; set; }
+    }
+
+    public class AchievementViewModel
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Icon { get; set; } = "fa-trophy";
+        public bool Unlocked { get; set; }
     }
 
     /// <summary>

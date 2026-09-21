@@ -17,6 +17,54 @@ namespace I_HAVE_GAME.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
+            modelBuilder.Entity("I_HAVE_GAME.Models.Game", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Genres")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastUpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Platforms")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double?>("Rating")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime?>("ReleaseDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Slug")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Games");
+                });
+
             modelBuilder.Entity("I_HAVE_GAME.Models.GameLibraryItem", b =>
                 {
                     b.Property<int>("Id")
@@ -60,6 +108,34 @@ namespace I_HAVE_GAME.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("GameLibraryItems");
+                });
+
+            modelBuilder.Entity("I_HAVE_GAME.Models.GameUpdate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(3000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("PublishedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId", "PublishedAt");
+
+                    b.ToTable("GameUpdates");
                 });
 
             modelBuilder.Entity("I_HAVE_GAME.Models.QuizAttempt", b =>

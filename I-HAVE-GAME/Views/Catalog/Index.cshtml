@@ -1,0 +1,72 @@
+@model IReadOnlyList<I_HAVE_GAME.Models.Game>
+@{
+    ViewData["Title"] = "แคตตาล็อกเกม";
+    var query = ViewBag.Query as string;
+    var notice = ViewBag.Notice as string;
+    var genres = ViewBag.Genres as List<string> ?? [];
+    var platforms = ViewBag.Platforms as List<string> ?? [];
+    var selectedGenre = ViewBag.SelectedGenre as string;
+    var selectedPlatform = ViewBag.SelectedPlatform as string;
+    var selectedSort = ViewBag.Sort as string ?? "rating";
+}
+
+<section class="catalog-header">
+    <span class="eyebrow">GAME CATALOG</span>
+    <h1>ค้นหาเกมที่น่าสนใจ</h1>
+    <p>ค้นหาจากชื่อ แนวเกม หรือคำสำคัญในคลังของเรา <a asp-controller="GameUpdates" asp-action="Calendar" class="catalog-calendar-link"><i class="fas fa-calendar-days"></i> ดูปฏิทินวันวางขาย</a></p>
+    <form method="get" class="catalog-search catalog-filter">
+        <label class="visually-hidden" for="query">ค้นหาเกม</label>
+        <input id="query" name="query" value="@query" class="form-control" placeholder="เช่น RPG, Hades, co-op" />
+        <select name="genre" class="form-select" aria-label="เลือกแนวเกม">
+            <option value="">ทุกแนวเกม</option>
+            @foreach (var item in genres)
+            {
+                if (item == selectedGenre) { <option value="@item" selected>@item</option> }
+                else { <option value="@item">@item</option> }
+            }
+        </select>
+        <select name="platform" class="form-select" aria-label="เลือกแพลตฟอร์ม">
+            <option value="">ทุกแพลตฟอร์ม</option>
+            @foreach (var item in platforms)
+            {
+                if (item == selectedPlatform) { <option value="@item" selected>@item</option> }
+                else { <option value="@item">@item</option> }
+            }
+        </select>
+        <select name="sort" class="form-select" aria-label="เรียงลำดับเกม">
+            @if (selectedSort == "rating") { <option value="rating" selected>คะแนนสูงสุด</option> } else { <option value="rating">คะแนนสูงสุด</option> }
+            @if (selectedSort == "newest") { <option value="newest" selected>วางจำหน่ายใหม่</option> } else { <option value="newest">วางจำหน่ายใหม่</option> }
+            @if (selectedSort == "title") { <option value="title" selected>ชื่อ A-Z</option> } else { <option value="title">ชื่อ A-Z</option> }
+            @if (selectedSort == "price-low") { <option value="price-low" selected>ราคาน้อยไปมาก</option> } else { <option value="price-low">ราคาน้อยไปมาก</option> }
+            @if (selectedSort == "price-high") { <option value="price-high" selected>ราคามากไปน้อย</option> } else { <option value="price-high">ราคามากไปน้อย</option> }
+        </select>
+        <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> ค้นหา</button>
+    </form>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(notice))
+{
+    <div class="alert alert-info"><i class="fas fa-info-circle"></i> @notice</div>
+}
+
+@if (Model.Count == 0)
+{
+    <div class="empty-catalog"><i class="fas fa-search"></i><h2>ไม่พบเกมที่ค้นหา</h2><p>ลองใช้ชื่อเกมหรือคำค้นอื่น</p><a asp-action="Index" class="btn btn-outline-primary">ล้างตัวกรอง</a></div>
+}
+else
+{
+    <p class="catalog-count">พบ <strong>@Model.Count</strong> เกม</p>
+    <div class="catalog-grid">
+        @foreach (var game in Model)
+        {
+            <a class="catalog-card" asp-action="Details" asp-route-slug="@game.Slug">
+                <div class="game-cover">
+                    @if (!string.IsNullOrWhiteSpace(game.ImageUrl)) { <img src="@game.ImageUrl" alt="หน้าปก @game.Title" /> }
+                    else { <i class="fas fa-gamepad"></i> }
+                    <span>@game.Genres?.Split(',').FirstOrDefault()</span>
+                </div>
+                <div class="catalog-card-body"><h3>@game.Title</h3><p>@game.Platforms</p><div><span class="rating"><i class="fas fa-star"></i> @game.Rating?.ToString("0.0")</span><span>@(game.Price.HasValue ? "$" + game.Price.Value.ToString("0.00") : "ราคาไม่ระบุ")</span></div></div>
+            </a>
+        }
+    </div>
+}

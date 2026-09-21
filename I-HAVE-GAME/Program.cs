@@ -1,6 +1,4 @@
 using I_HAVE_GAME.Data;
-using I_HAVE_GAME.Models.Rawg;
-using I_HAVE_GAME.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
@@ -28,19 +26,6 @@ builder.Services.AddSession(options =>
 // Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Configure RAWG API options
-builder.Services.Configure<RawgOptions>(builder.Configuration.GetSection("Rawg"));
-
-// Register HttpClient for RAWG service with timeout
-builder.Services.AddHttpClient<IRawgService, RawgService>()
-    .ConfigureHttpClient(client =>
-    {
-        client.Timeout = TimeSpan.FromSeconds(30);
-    });
-
-// Register RecommendationService
-builder.Services.AddScoped<RecommendationService>();
 
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -75,6 +60,7 @@ using (var scope = app.Services.CreateScope())
         logger.LogInformation("Seeding database...");
         DbSeeder.SeedQuizQuestions(dbContext);
         DbSeeder.SeedGames(dbContext);
+        DbSeeder.SeedGameReleaseTimelines(dbContext);
 
         logger.LogInformation("Database ready.");
     }

@@ -16,6 +16,7 @@ namespace I_HAVE_GAME.Data
         public DbSet<QuizAttempt> QuizAttempts { get; set; } = null!;
         // Games collection for internal search/index
         public DbSet<Models.Game> Games { get; set; } = null!;
+        public DbSet<GameUpdate> GameUpdates { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,9 @@ namespace I_HAVE_GAME.Data
                 entity.Property(u => u.CreatedAt).IsRequired();
                 entity.Property(u => u.Nickname).IsRequired(false);
                 entity.Property(u => u.MainDevice).IsRequired(false);
+                entity.Property(u => u.AvatarUrl).IsRequired(false);
+                entity.Property(u => u.Bio).HasMaxLength(500).IsRequired(false);
+                entity.Property(u => u.FavoriteGenres).HasMaxLength(300).IsRequired(false);
             });
 
             // GameLibraryItem configuration
@@ -97,6 +101,16 @@ namespace I_HAVE_GAME.Data
                     .WithMany(u => u.QuizAttempts)
                     .HasForeignKey(qa => qa.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<GameUpdate>(entity =>
+            {
+                entity.HasKey(update => update.Id);
+                entity.Property(update => update.GameId).IsRequired();
+                entity.Property(update => update.Title).IsRequired().HasMaxLength(200);
+                entity.Property(update => update.Description).HasMaxLength(3000);
+                entity.Property(update => update.PublishedAt).IsRequired();
+                entity.HasIndex(update => new { update.GameId, update.PublishedAt });
             });
         }
     }

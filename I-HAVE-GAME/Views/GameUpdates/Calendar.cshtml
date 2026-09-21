@@ -1,0 +1,44 @@
+@model I_HAVE_GAME.ViewModels.GameCalendarViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "ปฏิทินเกม";
+    var month = Model.Month;
+    var firstDayOffset = ((int)month.DayOfWeek + 6) % 7;
+    var calendarStart = month.AddDays(-firstDayOffset);
+    var thai = CultureInfo.GetCultureInfo("th-TH");
+    var previous = month.AddMonths(-1);
+    var next = month.AddMonths(1);
+    var days = new[] { "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์" };
+}
+<section class="release-calendar calendar-board">
+    <span class="eyebrow">GAME RELEASE & UPDATE CALENDAR</span>
+    <h1>ปฏิทินเกม</h1>
+    <p>ดูวันเกมออกใหม่และแพตช์อัปเดตทั้งหมดในปฏิทินเดียวกัน</p>
+    <div class="calendar-toolbar">
+        <a asp-action="Calendar" asp-route-year="@previous.Year" asp-route-month="@previous.Month" class="calendar-nav"><i class="fas fa-chevron-left"></i> เดือนก่อน</a>
+        <div><strong>@thai.DateTimeFormat.GetMonthName(month.Month) @month.Year</strong><a asp-action="Calendar" class="calendar-today">กลับมาวันนี้</a></div>
+        <a asp-action="Calendar" asp-route-year="@next.Year" asp-route-month="@next.Month" class="calendar-nav">เดือนถัดไป <i class="fas fa-chevron-right"></i></a>
+    </div>
+    <div class="calendar-legend"><span class="release"><i></i> เกมออกใหม่</span><span class="update"><i></i> เกมอัปเดต</span></div>
+    <div class="month-grid">
+        @foreach (var day in days) { <div class="calendar-day-name">@day</div> }
+        @for (var offset = 0; offset < 42; offset++)
+        {
+            var date = calendarStart.AddDays(offset);
+            var dayEvents = Model.Events.Where(item => item.Date.Date == date.Date).ToList();
+            <div class="calendar-cell @(date.Month == month.Month ? "" : "outside-month") @(date.Date == DateTime.Today ? "today" : "")">
+                <time>@date.Day</time>
+                <div class="calendar-events">
+                    @foreach (var item in dayEvents)
+                    {
+                        <a class="calendar-event @item.Kind" asp-action="Index" asp-route-slug="@item.GameSlug" title="@item.Title — @item.GameTitle"><span>@(item.Kind == "release" ? "ใหม่" : "อัปเดต")</span>@item.GameTitle</a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+    @if (Model.Events.Count == 0)
+    {
+        <div class="calendar-empty"><i class="fas fa-calendar-plus"></i><strong>เดือนนี้ยังไม่มีเกมออกใหม่หรืออัปเดต</strong><span>แอดมินสามารถเพิ่มเกมพร้อมวันวางจำหน่าย หรือเพิ่ม Patch Notes ได้จากหน้าจัดการเกม</span></div>
+    }
+</section>

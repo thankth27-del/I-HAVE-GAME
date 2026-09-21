@@ -50,39 +50,14 @@ namespace I_HAVE_GAME.ViewModels
         // Genre options (mapped to RAWG genre slugs)
         public static List<DropdownOption> GenreOptions => new List<DropdownOption>
         {
-            new DropdownOption { Value = "action", Label = "Action" },
-            new DropdownOption { Value = "adventure", Label = "Adventure" },
-            new DropdownOption { Value = "rpg", Label = "RPG" },
-            new DropdownOption { Value = "strategy", Label = "Strategy" },
-            new DropdownOption { Value = "simulation", Label = "Simulation" },
-            new DropdownOption { Value = "sports", Label = "Sports" },
-            new DropdownOption { Value = "racing", Label = "Racing" },
-            new DropdownOption { Value = "shooter", Label = "Shooter" },
-            new DropdownOption { Value = "puzzle", Label = "Puzzle" },
-            new DropdownOption { Value = "platformer", Label = "Platformer" },
-            new DropdownOption { Value = "fighting", Label = "Fighting" },
-            new DropdownOption { Value = "horror", Label = "Horror" },
-            new DropdownOption { Value = "indie", Label = "Indie" },
-            new DropdownOption { Value = "arcade", Label = "Arcade" },
-            new DropdownOption { Value = "casual", Label = "Casual" },
-            new DropdownOption { Value = "massively-multiplayer", Label = "Massively Multiplayer" },
-            new DropdownOption { Value = "card", Label = "Card" },
-            new DropdownOption { Value = "board-games", Label = "Board" },
-            new DropdownOption { Value = "educational", Label = "Educational" },
-            new DropdownOption { Value = "family", Label = "Family" },
-            new DropdownOption { Value = "", Label = "Unlimited" }
+            new DropdownOption { Value = "Action", Label = "Action" }, new DropdownOption { Value = "Adventure", Label = "Adventure" }, new DropdownOption { Value = "RPG", Label = "RPG" }, new DropdownOption { Value = "Strategy", Label = "Strategy" }, new DropdownOption { Value = "Simulation", Label = "Simulation" }, new DropdownOption { Value = "Sports", Label = "Sports" }, new DropdownOption { Value = "Racing", Label = "Racing" }, new DropdownOption { Value = "Shooter", Label = "Shooter" }, new DropdownOption { Value = "Puzzle", Label = "Puzzle" }, new DropdownOption { Value = "Platformer", Label = "Platformer" }, new DropdownOption { Value = "Horror", Label = "Horror" }, new DropdownOption { Value = "Indie", Label = "Indie" }, new DropdownOption { Value = "any", Label = "เลือกได้ทุกแนว" }
         };
 
         // Device/Platform options (mapped to RAWG platform IDs)
         // PC: 4 (Windows), 187 (Web), 18 (macOS) | PlayStation: 18 | Xbox: 1 | Nintendo: 7 | Mobile: 8 (iOS), 14 (Android)
         public static List<DropdownOption> DeviceOptions => new List<DropdownOption>
         {
-            new DropdownOption { Value = "4,187,18", Label = "PC" },
-            new DropdownOption { Value = "18", Label = "PlayStation" },
-            new DropdownOption { Value = "1", Label = "Xbox" },
-            new DropdownOption { Value = "7", Label = "Nintendo Switch" },
-            new DropdownOption { Value = "8,14", Label = "Mobile" },
-            new DropdownOption { Value = "", Label = "Unlimited" }
+            new DropdownOption { Value = "PC", Label = "PC" }, new DropdownOption { Value = "PlayStation", Label = "PlayStation" }, new DropdownOption { Value = "Xbox", Label = "Xbox" }, new DropdownOption { Value = "Nintendo", Label = "Nintendo Switch" }, new DropdownOption { Value = "Mobile", Label = "Mobile" }, new DropdownOption { Value = "any", Label = "เลือกได้ทุกเครื่อง" }
         };
 
         // Play Mode options - INFORMATIONAL ONLY
@@ -90,9 +65,7 @@ namespace I_HAVE_GAME.ViewModels
         // Development note: These selections are stored but not used for filtering
         public static List<DropdownOption> PlayModeOptions => new List<DropdownOption>
         {
-            new DropdownOption { Value = "single", Label = "Single-player" },
-            new DropdownOption { Value = "multi", Label = "Multiplayer" },
-            new DropdownOption { Value = "", Label = "Unlimited" }
+            new DropdownOption { Value = "solo", Label = "เล่นคนเดียว" }, new DropdownOption { Value = "multiplayer", Label = "เล่นกับเพื่อน" }, new DropdownOption { Value = "any", Label = "ได้ทั้งสองแบบ" }
         };
 
         // Budget options - INFORMATIONAL ONLY
@@ -100,17 +73,13 @@ namespace I_HAVE_GAME.ViewModels
         // Development note: These selections are stored but not used for filtering
         public static List<DropdownOption> BudgetOptions => new List<DropdownOption>
         {
-            new DropdownOption { Value = "free", Label = "Free" },
-            new DropdownOption { Value = "paid", Label = "Paid" },
-            new DropdownOption { Value = "", Label = "Unlimited" }
+            new DropdownOption { Value = "free", Label = "ฟรี" }, new DropdownOption { Value = "under-20", Label = "ประหยัด (ไม่เกิน $20)" }, new DropdownOption { Value = "premium", Label = "ราคาไม่จำกัด" }, new DropdownOption { Value = "any", Label = "ยังไม่กำหนดงบ" }
         };
 
         // Era/Release Date options (formatted for RAWG dates parameter: YYYY-MM-DD,YYYY-MM-DD)
         public static List<DropdownOption> EraOptions => new List<DropdownOption>
         {
-            new DropdownOption { Value = "2020-01-01,2099-12-31", Label = "2020+" },
-            new DropdownOption { Value = "1000-01-01,2019-12-31", Label = "Before 2020" },
-            new DropdownOption { Value = "", Label = "Unlimited" }
+            new DropdownOption { Value = "2020+", Label = "เกมใหม่ (2020 เป็นต้นไป)" }, new DropdownOption { Value = "before-2020", Label = "เกมคลาสสิก (ก่อน 2020)" }, new DropdownOption { Value = "any", Label = "ได้ทุกช่วงเวลา" }
         };
     }
 
@@ -146,6 +115,7 @@ namespace I_HAVE_GAME.ViewModels
     /// </summary>
     public class GameSearchRequest
     {
+        public string? Action { get; set; }
         public int CurrentStep { get; set; } = 1;
         public string? SelectedGenre { get; set; }
         public string? SelectedDevice { get; set; }

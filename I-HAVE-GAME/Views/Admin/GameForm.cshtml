@@ -1,0 +1,20 @@
+@model I_HAVE_GAME.ViewModels.GameFormViewModel
+@{ ViewData["Title"] = Model.IsEdit ? "แก้ไขเกม" : "เพิ่มเกม"; var action = Model.IsEdit ? "EditGame" : "CreateGame"; }
+
+<div class="admin-games game-form-page">
+    <a asp-action="GameList" class="back-link"><i class="fas fa-arrow-left"></i> กลับไปจัดการเกม</a>
+    <div class="admin-page-heading"><div><span class="eyebrow">GAME LIBRARY</span><h1>@ViewData["Title"]</h1><p>กรอกเฉพาะข้อมูลที่มีได้ ระบบจะนำไปใช้ในแคตตาล็อกและตัวช่วยเลือกเกม</p></div></div>
+    <form asp-action="@action" method="post" enctype="multipart/form-data" class="game-form">
+        @Html.AntiForgeryToken()<input asp-for="Id" type="hidden" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <div class="form-row"><div><label asp-for="Title" class="form-label">ชื่อเกม *</label><input asp-for="Title" class="form-control" /><span asp-validation-for="Title" class="validation-error"></span></div><div><label asp-for="Slug" class="form-label">Slug สำหรับลิงก์</label><input asp-for="Slug" class="form-control" placeholder="เว้นว่างเพื่อสร้างอัตโนมัติ" /><span asp-validation-for="Slug" class="validation-error"></span></div></div>
+        <label asp-for="Description" class="form-label">คำอธิบาย</label><textarea asp-for="Description" class="form-control" rows="4" placeholder="เล่าให้ผู้ใช้รู้ว่าเกมนี้เป็นแบบไหน"></textarea>
+        <div class="form-row"><div><label asp-for="Genres" class="form-label">แนวเกม</label><input asp-for="Genres" class="form-control" placeholder="เช่น Action, RPG" /></div><div><label asp-for="Platforms" class="form-label">แพลตฟอร์ม</label><input asp-for="Platforms" class="form-control" placeholder="เช่น PC, PS5, Nintendo Switch" /></div></div>
+        <div class="form-row three-columns"><div><label asp-for="Rating" class="form-label">คะแนน (0–5)</label><input asp-for="Rating" class="form-control" step="0.1" /></div><div><label asp-for="Price" class="form-label">ราคา (USD)</label><input asp-for="Price" class="form-control" step="0.01" /></div><div><label asp-for="ReleaseDate" class="form-label">วันวางจำหน่าย</label><input asp-for="ReleaseDate" class="form-control" /></div></div>
+        <div class="form-row"><div><label asp-for="LastUpdatedAt" class="form-label">วันที่อัปเดตล่าสุด</label><input asp-for="LastUpdatedAt" class="form-control" /><small class="form-hint">หรือเพิ่มรายละเอียดแพตช์จากปุ่ม “อัปเดต” หลังบันทึกเกม</small></div></div>
+        <div class="cover-upload"><div><label asp-for="CoverImage" class="form-label">อัปโหลดรูปปกเกม</label><input asp-for="CoverImage" class="form-control" accept=".jpg,.jpeg,.png,.webp" /><small class="form-hint">รองรับ JPG, PNG, WebP ขนาดไม่เกิน 5 MB</small></div><span class="cover-upload-or">หรือ</span><div><label asp-for="ImageUrl" class="form-label">URL รูปภาพ</label><input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/cover.jpg" /><small class="form-hint">ใช้เมื่อมีลิงก์รูปอยู่แล้ว</small></div></div>
+        <label asp-for="Tags" class="form-label">Tags</label><input asp-for="Tags" class="form-control" placeholder="เช่น co-op, story-driven, relaxing" />
+        <div class="form-actions"><button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> บันทึกเกม</button><a asp-action="GameList" class="btn btn-outline-primary">ยกเลิก</a></div>
+    </form>
+</div>
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

@@ -13,6 +13,7 @@ namespace I_HAVE_GAME.Models
         public double? Rating { get; set; }
         public decimal? Price { get; set; }
         public DateTime? ReleaseDate { get; set; }
+        public DateTime? LastUpdatedAt { get; set; }
         public DateTime AddedAt { get; set; } = DateTime.UtcNow;
     }
 }

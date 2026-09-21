@@ -8,6 +8,9 @@ namespace I_HAVE_GAME.Models
         public required string PasswordHash { get; set; }
         public string? Nickname { get; set; }
         public string? MainDevice { get; set; }
+        public string? AvatarUrl { get; set; }
+        public string? Bio { get; set; }
+        public string? FavoriteGenres { get; set; }
         public required string Role { get; set; }
         public required DateTime CreatedAt { get; set; }
 

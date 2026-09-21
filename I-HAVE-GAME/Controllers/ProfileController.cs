@@ -70,6 +70,9 @@ namespace I_HAVE_GAME.Controllers
                     Email = user.Email,
                     Nickname = user.Nickname ?? "Not set",
                     MainDevice = user.MainDevice ?? "Not set",
+                    AvatarUrl = user.AvatarUrl,
+                    Bio = user.Bio,
+                    FavoriteGenresText = user.FavoriteGenres,
                     CreatedAt = user.CreatedAt
                 };
 
@@ -105,6 +108,7 @@ namespace I_HAVE_GAME.Controllers
 
                 // Prepare genre proportion data for chart
                 model.GenreProportionData = CalculateGenreProportions(model.FavoriteGenres);
+                model.Achievements = BuildAchievements(model, libraryItems.Count);
 
                 return View(model);
             }
@@ -114,6 +118,45 @@ namespace I_HAVE_GAME.Controllers
                 return StatusCode(500, "An error occurred while loading your profile");
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(ProfileViewModel model)
+        {
+            var user = await _dbContext.Users.FindAsync(GetCurrentUserId());
+            if (user is null) return Unauthorized();
+            user.Nickname = string.IsNullOrWhiteSpace(model.Nickname) ? null : model.Nickname.Trim();
+            user.MainDevice = string.IsNullOrWhiteSpace(model.MainDevice) ? null : model.MainDevice.Trim();
+            user.Bio = string.IsNullOrWhiteSpace(model.Bio) ? null : model.Bio.Trim();
+            user.FavoriteGenres = string.IsNullOrWhiteSpace(model.FavoriteGenresText) ? null : model.FavoriteGenresText.Trim();
+            if (model.AvatarImage is { Length: > 0 })
+            {
+                var extension = Path.GetExtension(model.AvatarImage.FileName).ToLowerInvariant();
+                if (extension is not ".jpg" and not ".jpeg" and not ".png" and not ".webp" || model.AvatarImage.Length > 3 * 1024 * 1024)
+                {
+                    TempData["ProfileError"] = "รูปโปรไฟล์ต้องเป็น JPG, PNG หรือ WebP และขนาดไม่เกิน 3 MB";
+                    return RedirectToAction(nameof(Index));
+                }
+                var directory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+                Directory.CreateDirectory(directory);
+                var fileName = $"{Guid.NewGuid():N}{extension}";
+                await using var stream = System.IO.File.Create(Path.Combine(directory, fileName));
+                await model.AvatarImage.CopyToAsync(stream);
+                user.AvatarUrl = $"/uploads/avatars/{fileName}";
+            }
+            await _dbContext.SaveChangesAsync();
+            TempData["ProfileSuccess"] = "บันทึกโปรไฟล์แล้ว";
+            return RedirectToAction(nameof(Index));
+        }
+
+        private static List<AchievementViewModel> BuildAchievements(ProfileViewModel model, int libraryCount) =>
+        [
+            new() { Title = "ก้าวแรกของเกมเมอร์", Description = "เพิ่มเกมเข้าคลังเกมแรก", Icon = "fa-flag", Unlocked = libraryCount >= 1 },
+            new() { Title = "นักสะสม", Description = "มีเกมในคลัง 5 เกม", Icon = "fa-bookmark", Unlocked = libraryCount >= 5 },
+            new() { Title = "พิชิตเกม", Description = "เล่นจบ 1 เกม", Icon = "fa-medal", Unlocked = model.TotalPlayedCount >= 1 },
+            new() { Title = "สายรีวิว", Description = "ให้คะแนนเกมที่เล่นจบ 3 เกม", Icon = "fa-star", Unlocked = model.AverageRating > 0 && model.TotalPlayedCount >= 3 },
+            new() { Title = "นักสำรวจ", Description = "ใช้ตัวช่วยเลือกเกม 3 ครั้ง", Icon = "fa-compass", Unlocked = model.TotalSearchCount >= 3 }
+        ];
 
         /// <summary>
         /// Extract favorite genres from played games

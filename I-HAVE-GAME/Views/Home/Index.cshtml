@@ -1,147 +1,30 @@
-﻿@{
-    ViewData["Title"] = "หน้าแรก";
+@model I_HAVE_GAME.ViewModels.HomePageViewModel
+@{ ViewData["Title"] = "I-HAVE-GAME | เกมที่ใช่สำหรับคุณ"; var spotlight = Model.SpotlightGame; }
+
+@if (spotlight is not null)
+{
+    <section class="spotlight" style="background-image: linear-gradient(90deg, rgba(11,20,30,.96) 0%, rgba(16,30,43,.82) 48%, rgba(16,30,43,.30) 100%), url('@spotlight.ImageUrl');">
+        <div class="spotlight-content"><span class="eyebrow">SPOTLIGHT GAME</span><h1>@spotlight.Title</h1><p>@(string.IsNullOrWhiteSpace(spotlight.Description) ? "เกมเด่นที่คัดมาให้สำหรับเกมเมอร์" : spotlight.Description)</p><div class="spotlight-meta"><span><i class="fas fa-star"></i> @spotlight.Rating?.ToString("0.0")</span><span>@spotlight.Genres</span><span>@spotlight.Platforms</span></div><div class="hero-actions"><a asp-controller="Catalog" asp-action="Details" asp-route-slug="@spotlight.Slug" class="btn btn-primary">ดูรายละเอียดเกม</a><a asp-action="Surprise" class="btn btn-ghost"><i class="fas fa-dice"></i> สุ่มเกมให้ฉัน</a></div></div>
+    </section>
 }
 
-<div class="container mt-5">
-    <div class="row">
-        <!-- Welcome Section -->
-        <div class="col-lg-8">
-            <div class="welcome-card p-5 rounded shadow-sm mb-4">
-                <h1 class="display-5 mb-3" style="color: var(--accent-primary);">
-                    <i class="fas fa-gamepad"></i> ยินดีต้อนรับสู่ I HAVE GAME
-                </h1>
-                <p class="lead" style="font-size: 18px;">
-                    ค้นหา เปรียบเทียบ และจัดเก็บเกมที่คุณชื่นชอบ
-                </p>
-                <p class="text-muted">
-                    I HAVE GAME เป็นแพลตฟอร์มสำหรับสำรวจและจัดการคอลเลคชั่นเกมของคุณ 
-                    ค้นหาเกมใหม่ ได้รับคำแนะนำเกม และติดตามสถิติการเล่นของคุณได้ทั้งหมด
-                </p>
-                <a href="@Url.Action("Index", "Search")" class="btn btn-primary btn-lg mt-3">
-                    <i class="fas fa-search"></i> เริ่มค้นหาเกม
-                </a>
-            </div>
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <section class="player-hub"><div><span class="eyebrow">PLAYER HUB</span><h2>คลังเกมของคุณ</h2></div><div class="player-stats"><a asp-controller="GameLibrary" asp-action="Index"><strong>@Model.WishlistCount</strong><span>อยากเล่น</span></a><a asp-controller="GameLibrary" asp-action="Index"><strong>@Model.BacklogCount</strong><span>รอเล่น</span></a><a asp-controller="GameLibrary" asp-action="Index"><strong>@Model.PlayedCount</strong><span>เล่นจบ</span></a></div><a asp-controller="Matcher" asp-action="Index" class="btn btn-outline-primary">ไม่รู้จะเล่นอะไร? <i class="fas fa-wand-magic-sparkles"></i></a></section>
+}
+else
+{
+    <section class="join-banner"><div><span class="eyebrow">YOUR GAME SPACE</span><h2>จัดเกมที่อยากเล่นให้เป็นของคุณ</h2><p>สร้างคลังเกมส่วนตัว ติดตามเกมที่กำลังเล่น และให้เราช่วยเลือกเกมถัดไป</p></div><a asp-controller="Account" asp-action="Register" class="btn btn-primary">สร้างบัญชีฟรี</a></section>
+}
 
-            <!-- Features Section -->
-            <div class="features-section mb-4">
-                <h3 class="mb-4" style="color: var(--accent-primary);">
-                    <i class="fas fa-star"></i> คุณสมบัติหลัก
-                </h3>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="feature-card p-4 rounded" style="background-color: var(--bg-secondary);">
-                            <h5><i class="fas fa-search text-primary"></i> ค้นหาเกม</h5>
-                            <p class="text-muted">ค้นหาเกมตามประเภท อุปกรณ์ งบประมาณ และช่วงเวลา</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="feature-card p-4 rounded" style="background-color: var(--bg-secondary);">
-                            <h5><i class="fas fa-heart text-primary"></i> คลังเกม</h5>
-                            <p class="text-muted">เก็บเกมที่อยากเล่น รอเล่น และเล่นแล้วไว้ในคลัง</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="feature-card p-4 rounded" style="background-color: var(--bg-secondary);">
-                            <h5><i class="fas fa-sparkles text-primary"></i> เกมแนะนำ</h5>
-                            <p class="text-muted">ได้รับเกมแนะนำที่ตรงกับรสนิยมของคุณ</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="feature-card p-4 rounded" style="background-color: var(--bg-secondary);">
-                            <h5><i class="fas fa-gamepad text-primary"></i> ทายชื่อเกม</h5>
-                            <p class="text-muted">เล่น Quiz และชิงตำแหน่งในอันดับคะแนน</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<section class="game-news-banner"><div><span class="eyebrow">GAME TIMELINE</span><h2>เกมออกวันไหน? มีอะไรอัปเดตบ้าง?</h2><p>ดูวันวางจำหน่ายและ Patch Notes ของทุกเกมในคลังเราได้ในที่เดียว</p></div><div class="game-news-actions"><a asp-controller="GameUpdates" asp-action="Calendar" class="btn btn-primary"><i class="fas fa-calendar-days"></i> เปิดปฏิทินเกม</a><a asp-controller="Catalog" asp-action="Index" class="btn btn-ghost"><i class="fas fa-clipboard-list"></i> ดูหน้าเกม</a></div></section>
+<section class="home-section"><div class="section-heading"><div><span class="eyebrow">TOP RATED</span><h2>เกมที่เกมเมอร์ไม่ควรพลาด</h2></div><a asp-controller="Catalog" asp-action="Index">ดูทั้งหมด <i class="fas fa-arrow-right"></i></a></div><div class="game-rail">@foreach (var game in Model.TopGames) { <partial name="_GameCard" model="game" /> }</div></section>
 
-        <!-- Sidebar Section -->
-        <div class="col-lg-4">
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <!-- Quick Actions -->
-                <div class="quick-actions mb-4">
-                    <h5 class="mb-3" style="color: var(--accent-primary);">
-                        <i class="fas fa-bolt"></i> ลิงก์ด่วน
-                    </h5>
-                    <div class="d-grid gap-2">
-                        <a href="@Url.Action("Index", "Search")" class="btn btn-outline-primary">
-                            <i class="fas fa-search"></i> ค้นหาเกม
-                        </a>
-                        <a href="@Url.Action("Index", "GameLibrary")" class="btn btn-outline-primary">
-                            <i class="fas fa-book"></i> คลังเกมของฉัน
-                        </a>
-                        <a href="@Url.Action("Index", "Recommendations")" class="btn btn-outline-primary">
-                            <i class="fas fa-sparkles"></i> เกมแนะนำ
-                        </a>
-                        <a href="@Url.Action("Index", "Quiz")" class="btn btn-outline-primary">
-                            <i class="fas fa-gamepad"></i> ทายชื่อเกม
-                        </a>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <!-- Auth Prompt -->
-                <div class="auth-card p-4 rounded shadow-sm" style="background-color: var(--bg-secondary); border: 2px solid var(--accent-primary);">
-                    <h5 class="mb-3" style="color: var(--accent-primary);">
-                        <i class="fas fa-lock"></i> เข้าสู่ระบบเพื่อดำเนินการต่อ
-                    </h5>
-                    <p class="text-muted mb-3">
-                        เข้าสู่ระบบหรือสมัครสมาชิกเพื่อเริ่มจัดการเกมของคุณ
-                    </p>
-                    <div class="d-grid gap-2">
-                        <a href="@Url.Action("Login", "Account")" class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
-                        </a>
-                        <a href="@Url.Action("Register", "Account")" class="btn btn-outline-primary">
-                            <i class="fas fa-user-plus"></i> สมัครสมาชิก
-                        </a>
-                    </div>
-                </div>
-            }
+<section class="genre-explorer"><span class="eyebrow">EXPLORE BY MOOD</span><h2>วันนี้อยากเล่นแบบไหน?</h2><div class="mood-grid"><a asp-controller="Catalog" asp-action="Index" asp-route-genre="Action"><i class="fas fa-burst"></i><strong>มันส์สะใจ</strong><span>Action</span></a><a asp-controller="Catalog" asp-action="Index" asp-route-genre="RPG"><i class="fas fa-hat-wizard"></i><strong>ผจญภัยยาว ๆ</strong><span>RPG</span></a><a asp-controller="Catalog" asp-action="Index" asp-route-genre="Puzzle"><i class="fas fa-puzzle-piece"></i><strong>ชิลแต่ใช้สมอง</strong><span>Puzzle</span></a><a asp-controller="Catalog" asp-action="Index" asp-route-platform="PC"><i class="fas fa-computer"></i><strong>เล่นบน PC</strong><span>PC Games</span></a></div></section>
 
-            <!-- Info Box -->
-            <div class="info-box p-4 rounded mt-4" style="background-color: var(--bg-secondary);">
-                <h5 class="mb-3"><i class="fas fa-info-circle"></i> ข้อมูล</h5>
-                <small class="text-muted">
-                    <p>I HAVE GAME ใช้ข้อมูล RAWG API เพื่อให้คุณได้เกมล่าสุดและข้อมูลเกมที่สมบูรณ์แบบ</p>
-                    <p class="mb-0">เริ่มเพลิดเพลินกับการค้นหาเกมของคุณได้เลย!</p>
-                </small>
-            </div>
-        </div>
-    </div>
-</div>
+@foreach (var shelf in Model.GenreShelves.Where(item => item.Value.Count > 0))
+{
+    <section class="home-section"><div class="section-heading"><h2>@shelf.Key</h2><a asp-controller="Catalog" asp-action="Index">สำรวจเพิ่ม <i class="fas fa-arrow-right"></i></a></div><div class="game-rail">@foreach (var game in shelf.Value) { <partial name="_GameCard" model="game" /> }</div></section>
+}
 
-<style>
-    .welcome-card {
-        background-color: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-left: 4px solid var(--accent-primary);
-    }
-
-    .feature-card {
-        border-left: 3px solid var(--accent-primary);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px var(--shadow-medium);
-    }
-
-    .quick-actions .btn {
-        text-align: left;
-        padding: 12px;
-        font-weight: 500;
-    }
-
-    .auth-card {
-        text-align: center;
-    }
-
-    .info-box {
-        border-left: 3px solid var(--accent-secondary);
-    }
-</style>
+<section class="feature-strip"><div><i class="fas fa-dice"></i><h3>สุ่มแล้วลุย</h3><p>ให้เกมหนึ่งเกมตัดสินใจแทนคุณ</p></div><div><i class="fas fa-bookmark"></i><h3>คลังของคุณ</h3><p>เก็บเกมที่อยากเล่น กำลังเล่น และเล่นจบไว้เป็นที่เดียว</p></div><div><i class="fas fa-wand-magic-sparkles"></i><h3>เลือกเกมให้ตรงใจ</h3><p>ตอบคำถาม 5 ข้อ แล้วเจอเกมที่เหมาะกับวันนี้</p></div></section>

@@ -1,372 +1,99 @@
-using I_HAVE_GAME.Services;
-using I_HAVE_GAME.ViewModels;
-using I_HAVE_GAME.Models;
 using I_HAVE_GAME.Data;
+using I_HAVE_GAME.Models;
+using I_HAVE_GAME.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace I_HAVE_GAME.Controllers
+namespace I_HAVE_GAME.Controllers;
+
+[Authorize]
+public class SearchController : Controller
 {
-    [Authorize]
-    public class SearchController : Controller
+    private readonly AppDbContext _dbContext;
+    public SearchController(AppDbContext dbContext) => _dbContext = dbContext;
+
+    [HttpGet("Matcher")]
+    public IActionResult Index() => View(new GameSearchViewModel());
+
+    [HttpPost("Matcher")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Choose(GameSearchRequest request)
     {
-        private readonly IRawgService _rawgService;
-        private readonly ILogger<SearchController> _logger;
-        private readonly AppDbContext _dbContext;
-
-        public SearchController(IRawgService rawgService, ILogger<SearchController> logger, AppDbContext dbContext)
+        request.SelectedGenre = Request.Form[nameof(request.SelectedGenre)].LastOrDefault();
+        request.SelectedDevice = Request.Form[nameof(request.SelectedDevice)].LastOrDefault();
+        request.SelectedPlayMode = Request.Form[nameof(request.SelectedPlayMode)].LastOrDefault();
+        request.SelectedBudget = Request.Form[nameof(request.SelectedBudget)].LastOrDefault();
+        request.SelectedEra = Request.Form[nameof(request.SelectedEra)].LastOrDefault();
+        var step = Math.Clamp(request.CurrentStep, 1, 5);
+        if (request.Action == "previous") step--;
+        else if (request.Action == "next")
         {
-            _rawgService = rawgService;
-            _logger = logger;
-            _dbContext = dbContext;
+            if (string.IsNullOrWhiteSpace(ChoiceForStep(request, step)))
+            {
+                var invalidModel = ToViewModel(request, step);
+                invalidModel.ErrorMessage = "กรุณาเลือกคำตอบก่อนดำเนินการต่อ";
+                return View("Index", invalidModel);
+            }
+            step++;
         }
 
-        /// <summary>
-        /// Main search page - shows the wizard
-        /// </summary>
-        public async Task<IActionResult> Index()
-        {
-            if (!_rawgService.IsConfigured())
-            {
-                return View("Error", new ErrorViewModel 
-                { 
-                    Message = "The game search feature is currently unavailable. Please contact support.",
-                    Details = "RAWG API is not configured."
-                });
-            }
+        if (request.Action != "complete") return View("Index", ToViewModel(request, Math.Clamp(step, 1, 5)));
 
-            var model = new GameSearchViewModel { CurrentStep = 1 };
-            return View(model);
-        }
+        var model = ToViewModel(request, 5);
+        var games = await _dbContext.Games.AsNoTracking().ToListAsync();
+        var ranked = games
+            .Select(game => new { Game = game, Score = Score(game, request) })
+            .Where(item => string.IsNullOrWhiteSpace(request.SelectedGenre) || request.SelectedGenre == "any" || Contains(item.Game.Genres, request.SelectedGenre))
+            .OrderByDescending(item => item.Score)
+            .ThenByDescending(item => item.Game.Rating ?? 0)
+            .Take(20)
+            .Select(item => Map(item.Game))
+            .ToList();
 
-        /// <summary>
-        /// Step 1: Genre selection
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Step1(GameSearchRequest request)
-        {
-            if (!ModelState.IsValid || string.IsNullOrWhiteSpace(request.SelectedGenre))
-            {
-                ViewData["Error"] = "Please select a genre to continue.";
-                var model = new GameSearchViewModel { CurrentStep = 1 };
-                return View("Index", model);
-            }
+        model.Results = ranked;
+        model.TotalResults = ranked.Count;
+        if (ranked.Count == 0) model.WarningMessage = "ยังไม่มีเกมในคลังที่ตรงกับคำตอบนี้ ลองเลือกแนวเกมอื่น หรือให้ผู้ดูแลเพิ่มเกมใหม่";
+        await SaveHistory(request, ranked.Count);
+        return View("Index", model);
+    }
 
-            var viewModel = new GameSearchViewModel
-            {
-                CurrentStep = 2,
-                SelectedGenre = request.SelectedGenre
-            };
+    private static GameSearchViewModel ToViewModel(GameSearchRequest request, int step) => new()
+    {
+        CurrentStep = step, SelectedGenre = request.SelectedGenre, SelectedDevice = request.SelectedDevice,
+        SelectedPlayMode = request.SelectedPlayMode, SelectedBudget = request.SelectedBudget, SelectedEra = request.SelectedEra
+    };
 
-            return View("Index", viewModel);
-        }
+    private static string? ChoiceForStep(GameSearchRequest request, int step) => step switch
+    {
+        1 => request.SelectedGenre, 2 => request.SelectedDevice, 3 => request.SelectedPlayMode,
+        4 => request.SelectedBudget, 5 => request.SelectedEra, _ => null
+    };
 
-        /// <summary>
-        /// Step 2: Device/Platform selection
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Step2(GameSearchRequest request)
-        {
-            if (!ModelState.IsValid || string.IsNullOrWhiteSpace(request.SelectedDevice))
-            {
-                ViewData["Error"] = "Please select a device to continue.";
-                var model = new GameSearchViewModel
-                {
-                    CurrentStep = 2,
-                    SelectedGenre = request.SelectedGenre
-                };
-                return View("Index", model);
-            }
+    private static int Score(Game game, GameSearchRequest request)
+    {
+        var score = 0;
+        if (Contains(game.Genres, request.SelectedGenre)) score += 5;
+        if (Contains(game.Platforms, request.SelectedDevice)) score += 3;
+        if (request.SelectedPlayMode == "solo" && !Contains(game.Tags, "multi") && !Contains(game.Tags, "co-op")) score += 2;
+        if (request.SelectedPlayMode == "multiplayer" && (Contains(game.Tags, "multi") || Contains(game.Tags, "co-op") || Contains(game.Genres, "multiplayer"))) score += 2;
+        if (request.SelectedBudget == "free" && (!game.Price.HasValue || game.Price == 0)) score += 2;
+        if (request.SelectedBudget == "under-20" && game.Price is <= 20) score += 2;
+        if (request.SelectedBudget == "premium" && game.Price is > 20) score += 2;
+        if (request.SelectedEra == "2020+" && game.ReleaseDate?.Year >= 2020) score++;
+        if (request.SelectedEra == "before-2020" && game.ReleaseDate?.Year < 2020) score++;
+        return score;
+    }
 
-            var viewModel = new GameSearchViewModel
-            {
-                CurrentStep = 3,
-                SelectedGenre = request.SelectedGenre,
-                SelectedDevice = request.SelectedDevice
-            };
+    private static bool Contains(string? source, string? value) => !string.IsNullOrWhiteSpace(value) && value != "any" && !string.IsNullOrWhiteSpace(source) && source.Contains(value, StringComparison.OrdinalIgnoreCase);
+    private static GameResultViewModel Map(Game game) => new() { Id = game.Id, Slug = game.Slug ?? string.Empty, Name = game.Title, ReleasedDate = game.ReleaseDate?.ToString("d MMM yyyy"), Rating = (decimal)(game.Rating ?? 0), Genres = Split(game.Genres), Platforms = Split(game.Platforms), Description = game.Description };
+    private static List<string> Split(string? text) => string.IsNullOrWhiteSpace(text) ? [] : text.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            return View("Index", viewModel);
-        }
-
-        /// <summary>
-        /// Step 3: Play Mode selection
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Step3(GameSearchRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewData["Error"] = "Invalid input. Please try again.";
-                var model = new GameSearchViewModel
-                {
-                    CurrentStep = 3,
-                    SelectedGenre = request.SelectedGenre,
-                    SelectedDevice = request.SelectedDevice
-                };
-                return View("Index", model);
-            }
-
-            var viewModel = new GameSearchViewModel
-            {
-                CurrentStep = 4,
-                SelectedGenre = request.SelectedGenre,
-                SelectedDevice = request.SelectedDevice,
-                SelectedPlayMode = request.SelectedPlayMode
-            };
-
-            return View("Index", viewModel);
-        }
-
-        /// <summary>
-        /// Step 4: Budget selection
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Step4(GameSearchRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewData["Error"] = "Invalid input. Please try again.";
-                var model = new GameSearchViewModel
-                {
-                    CurrentStep = 4,
-                    SelectedGenre = request.SelectedGenre,
-                    SelectedDevice = request.SelectedDevice,
-                    SelectedPlayMode = request.SelectedPlayMode
-                };
-                return View("Index", model);
-            }
-
-            var viewModel = new GameSearchViewModel
-            {
-                CurrentStep = 5,
-                SelectedGenre = request.SelectedGenre,
-                SelectedDevice = request.SelectedDevice,
-                SelectedPlayMode = request.SelectedPlayMode,
-                SelectedBudget = request.SelectedBudget
-            };
-
-            return View("Index", viewModel);
-        }
-
-        /// <summary>
-        /// Step 5: Era/Release Date selection
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Step5(GameSearchRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewData["Error"] = "Invalid input. Please try again.";
-                var model = new GameSearchViewModel
-                {
-                    CurrentStep = 5,
-                    SelectedGenre = request.SelectedGenre,
-                    SelectedDevice = request.SelectedDevice,
-                    SelectedPlayMode = request.SelectedPlayMode,
-                    SelectedBudget = request.SelectedBudget
-                };
-                return View("Index", model);
-            }
-
-            var viewModel = new GameSearchViewModel
-            {
-                CurrentStep = 5,
-                SelectedGenre = request.SelectedGenre,
-                SelectedDevice = request.SelectedDevice,
-                SelectedPlayMode = request.SelectedPlayMode,
-                SelectedBudget = request.SelectedBudget,
-                SelectedEra = request.SelectedEra
-            };
-
-            return View("Index", viewModel);
-        }
-
-        /// <summary>
-        /// Back button - go to previous step
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult GoBack(GameSearchRequest request)
-        {
-            if (request.CurrentStep <= 1)
-            {
-                return RedirectToAction("Index");
-            }
-
-            var previousStep = request.CurrentStep - 1;
-            var viewModel = new GameSearchViewModel
-            {
-                CurrentStep = previousStep,
-                SelectedGenre = request.SelectedGenre,
-                SelectedDevice = request.SelectedDevice,
-                SelectedPlayMode = request.SelectedPlayMode,
-                SelectedBudget = request.SelectedBudget,
-                SelectedEra = request.SelectedEra
-            };
-
-            return View("Index", viewModel);
-        }
-
-        /// <summary>
-        /// Search for games based on wizard selections
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Search(GameSearchRequest request, CancellationToken cancellationToken)
-        {
-            // Validate selections
-            if (string.IsNullOrWhiteSpace(request.SelectedGenre) ||
-                string.IsNullOrWhiteSpace(request.SelectedDevice) ||
-                string.IsNullOrWhiteSpace(request.SelectedEra))
-            {
-                var errorModel = new GameSearchViewModel
-                {
-                    CurrentStep = 5,
-                    SelectedGenre = request.SelectedGenre,
-                    SelectedDevice = request.SelectedDevice,
-                    SelectedPlayMode = request.SelectedPlayMode,
-                    SelectedBudget = request.SelectedBudget,
-                    SelectedEra = request.SelectedEra,
-                    ErrorMessage = "Please complete all steps before searching."
-                };
-                return View("Index", errorModel);
-            }
-
-            var viewModel = new GameSearchViewModel
-            {
-                CurrentStep = 5,
-                SelectedGenre = request.SelectedGenre,
-                SelectedDevice = request.SelectedDevice,
-                SelectedPlayMode = request.SelectedPlayMode,
-                SelectedBudget = request.SelectedBudget,
-                SelectedEra = request.SelectedEra,
-                CurrentPage = Math.Max(request.CurrentPage, 0),
-                PageSize = request.PageSize,
-                IsLoading = true
-            };
-
-            try
-            {
-                // Build RAWG query parameters from selections
-                var genre = request.SelectedGenre == "" ? null : request.SelectedGenre;
-                var platforms = request.SelectedDevice == "" ? null : request.SelectedDevice;
-                var dateRange = request.SelectedEra == "" ? null : request.SelectedEra;
-
-                // Call RAWG service
-                // RAWG uses 1-based page numbers
-                var page = viewModel.CurrentPage + 1;
-                var result = await _rawgService.SearchGamesAsync(
-                    genre: genre,
-                    platforms: platforms,
-                    released: dateRange,
-                    search: null,
-                    ordering: "-rating",
-                    pageSize: viewModel.PageSize,
-                    page: page,
-                    cancellationToken: cancellationToken
-                );
-
-                if (result == null)
-                {
-                    viewModel.ErrorMessage = "Unable to search for games. The RAWG API is currently unavailable. Please try again later.";
-                    viewModel.IsLoading = false;
-                    return View("Index", viewModel);
-                }
-
-                // Map RAWG results to view models
-                viewModel.Results = MapRawgGamesToResultViewModels(result.Results);
-                viewModel.TotalResults = result.Count;
-                viewModel.IsLoading = false;
-
-                if (viewModel.Results.Count == 0)
-                {
-                    viewModel.WarningMessage = "No games found matching your criteria. Try adjusting your selections.";
-                }
-
-                // Save search history for this user
-                await SaveSearchHistoryAsync(
-                    genre: request.SelectedGenre == "" ? null : request.SelectedGenre,
-                    device: request.SelectedDevice == "" ? null : request.SelectedDevice,
-                    playMode: request.SelectedPlayMode == "" ? null : request.SelectedPlayMode,
-                    budget: request.SelectedBudget == "" ? null : request.SelectedBudget,
-                    era: request.SelectedEra == "" ? null : request.SelectedEra,
-                    resultCount: viewModel.Results.Count
-                );
-
-                return View("Index", viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during game search");
-                viewModel.ErrorMessage = "An unexpected error occurred during the search. Please try again.";
-                viewModel.IsLoading = false;
-                return View("Index", viewModel);
-            }
-        }
-
-        /// <summary>
-        /// Map RAWG game models to result view models
-        /// </summary>
-        private List<GameResultViewModel> MapRawgGamesToResultViewModels(List<Models.Rawg.RawgGame> rawgGames)
-        {
-            return rawgGames.Select(g => new GameResultViewModel
-            {
-                Id = g.Id,
-                Slug = g.Slug,
-                Name = g.Name,
-                BackgroundImage = g.BackgroundImage,
-                ReleasedDate = g.Released,
-                Rating = g.Rating,
-                RatingsCount = g.RatingsCount,
-                Genres = g.Genres?.Select(gen => gen.Name).ToList() ?? new List<string>(),
-                Platforms = g.Platforms?.Where(p => p.Platform != null).Select(p => p.Platform!.Name).ToList() ?? new List<string>(),
-                Stores = g.Stores?.Where(s => s.Store != null).Select(s => s.Store!.Name).ToList() ?? new List<string>(),
-                Description = g.DescriptionRaw
-            }).ToList();
-        }
-
-        /// <summary>
-        /// Save search history for the current user
-        /// </summary>
-        private async Task SaveSearchHistoryAsync(string? genre, string? device, string? playMode, string? budget, string? era, int resultCount)
-        {
-            try
-            {
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                if (!int.TryParse(userIdClaim?.Value, out var userId))
-                {
-                    _logger.LogWarning("Unable to extract UserId from claims for search history");
-                    return;
-                }
-
-                var searchHistory = new SearchHistory
-                {
-                    UserId = userId,
-                    Genre = genre,
-                    Device = device,
-                    PlayMode = playMode,
-                    Budget = budget,
-                    Era = era,
-                    ResultCount = resultCount,
-                    SearchedAt = DateTime.UtcNow
-                };
-
-                _dbContext.SearchHistories.Add(searchHistory);
-                await _dbContext.SaveChangesAsync();
-
-                _logger.LogInformation("Search history saved for user {UserId} with {ResultCount} results.", userId, resultCount);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error saving search history");
-                // Don't throw - let the search continue even if history logging fails
-            }
-        }
+    private async Task SaveHistory(GameSearchRequest request, int count)
+    {
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId)) return;
+        _dbContext.SearchHistories.Add(new SearchHistory { UserId = userId, Genre = request.SelectedGenre, Device = request.SelectedDevice, PlayMode = request.SelectedPlayMode, Budget = request.SelectedBudget, Era = request.SelectedEra, ResultCount = count, SearchedAt = DateTime.UtcNow });
+        await _dbContext.SaveChangesAsync();
     }
 }

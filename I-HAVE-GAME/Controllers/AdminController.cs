@@ -22,12 +22,14 @@ namespace I_HAVE_GAME.Controllers
 
         // GET: /Admin/Index
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var adminUsername = User.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
             _logger.LogInformation("Admin {AdminUsername} accessed admin dashboard.", adminUsername);
 
             ViewData["AdminUsername"] = adminUsername;
+            ViewData["GameCount"] = await _dbContext.Games.CountAsync();
+            ViewData["QuizCount"] = await _dbContext.QuizQuestions.CountAsync();
             return View();
         }
 
@@ -246,6 +248,138 @@ namespace I_HAVE_GAME.Controllers
         }
 
         #endregion
+
+        #region Game Management
+
+        [HttpGet]
+        public async Task<IActionResult> GameList()
+        {
+            return View(await _dbContext.Games.OrderByDescending(game => game.AddedAt).AsNoTracking().ToListAsync());
+        }
+
+        [HttpGet]
+        public IActionResult CreateGame() => View("GameForm", new GameFormViewModel());
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateGame(GameFormViewModel model)
+        {
+            if (!ModelState.IsValid) return View("GameForm", model);
+            var slug = CreateSlug(model.Slug, model.Title);
+            if (await _dbContext.Games.AnyAsync(game => game.Slug == slug))
+            {
+                ModelState.AddModelError(nameof(model.Slug), "ลิงก์ชื่อนี้ถูกใช้แล้ว กรุณาเปลี่ยนชื่อเกมหรือ slug");
+                return View("GameForm", model);
+            }
+            var game = MapGame(model, new Game { Title = model.Title, Slug = slug });
+            game.ImageUrl = await SaveCoverImage(model.CoverImage, model.ImageUrl);
+            _dbContext.Games.Add(game);
+            await _dbContext.SaveChangesAsync();
+            TempData["SuccessMessage"] = "เพิ่มเกมเรียบร้อยแล้ว";
+            return RedirectToAction(nameof(GameList));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditGame(int id)
+        {
+            var game = await _dbContext.Games.FindAsync(id);
+            if (game is null) return NotFound();
+            return View("GameForm", new GameFormViewModel { Id = game.Id, Title = game.Title, Slug = game.Slug, Description = game.Description, Genres = game.Genres, Platforms = game.Platforms, Tags = game.Tags, ImageUrl = game.ImageUrl, Rating = game.Rating, Price = game.Price, ReleaseDate = game.ReleaseDate, LastUpdatedAt = game.LastUpdatedAt });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditGame(GameFormViewModel model)
+        {
+            if (!ModelState.IsValid) return View("GameForm", model);
+            var game = await _dbContext.Games.FindAsync(model.Id);
+            if (game is null) return NotFound();
+            var slug = CreateSlug(model.Slug, model.Title);
+            if (await _dbContext.Games.AnyAsync(item => item.Id != model.Id && item.Slug == slug))
+            {
+                ModelState.AddModelError(nameof(model.Slug), "ลิงก์ชื่อนี้ถูกใช้แล้ว");
+                return View("GameForm", model);
+            }
+            model.Slug = slug;
+            MapGame(model, game);
+            game.ImageUrl = await SaveCoverImage(model.CoverImage, model.ImageUrl);
+            await _dbContext.SaveChangesAsync();
+            TempData["SuccessMessage"] = "บันทึกการแก้ไขเกมแล้ว";
+            return RedirectToAction(nameof(GameList));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteGame(int id)
+        {
+            var game = await _dbContext.Games.FindAsync(id);
+            if (game is null) return NotFound();
+            _dbContext.Games.Remove(game);
+            await _dbContext.SaveChangesAsync();
+            TempData["SuccessMessage"] = "ลบเกมแล้ว";
+            return RedirectToAction(nameof(GameList));
+        }
+
+        private static Game MapGame(GameFormViewModel model, Game game)
+        {
+            game.Title = model.Title.Trim(); game.Slug = CreateSlug(model.Slug, model.Title); game.Description = model.Description?.Trim(); game.Genres = model.Genres?.Trim(); game.Platforms = model.Platforms?.Trim(); game.Tags = model.Tags?.Trim(); game.Rating = model.Rating; game.Price = model.Price; game.ReleaseDate = model.ReleaseDate; game.LastUpdatedAt = model.LastUpdatedAt;
+            return game;
+        }
+
+        private static string CreateSlug(string? requestedSlug, string title)
+        {
+            var source = string.IsNullOrWhiteSpace(requestedSlug) ? title : requestedSlug;
+            var slug = System.Text.RegularExpressions.Regex.Replace(source.Trim().ToLowerInvariant(), "[^a-z0-9]+", "-").Trim('-');
+            return string.IsNullOrWhiteSpace(slug) ? $"game-{Guid.NewGuid():N}" : slug;
+        }
+
+        private async Task<string?> SaveCoverImage(IFormFile? coverImage, string? imageUrl)
+        {
+            if (coverImage is null || coverImage.Length == 0) return string.IsNullOrWhiteSpace(imageUrl) ? null : imageUrl.Trim();
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var extension = Path.GetExtension(coverImage.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension) || coverImage.Length > 5 * 1024 * 1024) throw new InvalidOperationException("รูปปกต้องเป็น JPG, PNG หรือ WebP และขนาดไม่เกิน 5 MB");
+            var directory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "games");
+            Directory.CreateDirectory(directory);
+            var fileName = $"{Guid.NewGuid():N}{extension}";
+            await using var stream = System.IO.File.Create(Path.Combine(directory, fileName));
+            await coverImage.CopyToAsync(stream);
+            return $"/uploads/games/{fileName}";
+        }
+
+        #endregion
+
+        [HttpGet]
+        public async Task<IActionResult> ManageUpdates(int id)
+        {
+            var game = await _dbContext.Games.FindAsync(id);
+            if (game is null) return NotFound();
+            return View(new GameUpdateListViewModel { Game = game, Updates = await _dbContext.GameUpdates.Where(update => update.GameId == id).OrderByDescending(update => update.PublishedAt).AsNoTracking().ToListAsync() });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddUpdate(int gameId, string title, string? description, DateTime? publishedAt)
+        {
+            var game = await _dbContext.Games.FindAsync(gameId);
+            if (game is null) return NotFound();
+            if (string.IsNullOrWhiteSpace(title)) { TempData["ErrorMessage"] = "กรุณากรอกหัวข้ออัปเดต"; return RedirectToAction(nameof(ManageUpdates), new { id = gameId }); }
+            var date = publishedAt ?? DateTime.UtcNow;
+            _dbContext.GameUpdates.Add(new GameUpdate { GameId = gameId, Title = title.Trim(), Description = description?.Trim(), PublishedAt = date });
+            game.LastUpdatedAt = date;
+            await _dbContext.SaveChangesAsync();
+            TempData["SuccessMessage"] = "เพิ่มรายการอัปเดตแล้ว";
+            return RedirectToAction(nameof(ManageUpdates), new { id = gameId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteUpdate(int id, int gameId)
+        {
+            var update = await _dbContext.GameUpdates.FirstOrDefaultAsync(item => item.Id == id && item.GameId == gameId);
+            if (update is not null) { _dbContext.GameUpdates.Remove(update); await _dbContext.SaveChangesAsync(); TempData["SuccessMessage"] = "ลบรายการอัปเดตแล้ว"; }
+            return RedirectToAction(nameof(ManageUpdates), new { id = gameId });
+        }
 
         /// <summary>
         /// Get current admin's ID from authenticated claims

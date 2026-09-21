@@ -10,7 +10,8 @@ namespace I_HAVE_GAME.Controllers
     /// Controller for game recommendations
     /// Recommendations are based on user's played games and ratings
     /// </summary>
-    [Authorize]
+    // ฟีเจอร์นี้ใช้ RAWG ซึ่งโปรเจกต์เปลี่ยนมาใช้คลังเกมภายในแล้ว
+    [NonController]
     public class RecommendationsController : Controller
     {
         private readonly RecommendationService _recommendationService;

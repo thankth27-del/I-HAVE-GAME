@@ -8,7 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace I_HAVE_GAME.Controllers
 {
-    [Authorize]
+    // เกมทายชื่อเกมถูกปลดออกแล้ว โดยคำถามถูกนำไปใช้กับ Game Buddy แทน
+    [NonController]
     public class QuizController : Controller
     {
         private readonly AppDbContext _dbContext;

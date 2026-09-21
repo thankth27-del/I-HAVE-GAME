@@ -9,7 +9,8 @@ namespace I_HAVE_GAME.Controllers
     /// Controller for comparing games
     /// Allows users to select 2-3 games and compare them side-by-side
     /// </summary>
-    [Authorize]
+    // ฟีเจอร์นี้ใช้ RAWG ซึ่งโปรเจกต์เปลี่ยนมาใช้คลังเกมภายในแล้ว
+    [NonController]
     public class CompareController : Controller
     {
         private readonly IRawgService _rawgService;
