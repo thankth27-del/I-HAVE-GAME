@@ -61,8 +61,12 @@ else
         {
             <a class="catalog-card" asp-action="Details" asp-route-slug="@game.Slug">
                 <div class="game-cover">
-                    @if (!string.IsNullOrWhiteSpace(game.ImageUrl)) { <img src="@game.ImageUrl" alt="หน้าปก @game.Title" /> }
-                    else { <i class="fas fa-gamepad"></i> }
+                    @if (!string.IsNullOrWhiteSpace(game.ImageUrl))
+                    {
+                        <img src="@game.ImageUrl" alt="หน้าปก @game.Title" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+                        <div class="cover-placeholder" hidden><i class="fas fa-gamepad"></i><b>@game.Title</b></div>
+                    }
+                    else { <div class="cover-placeholder"><i class="fas fa-gamepad"></i><b>@game.Title</b></div> }
                     <span>@game.Genres?.Split(',').FirstOrDefault()</span>
                 </div>
                 <div class="catalog-card-body"><h3>@game.Title</h3><p>@game.Platforms</p><div><span class="rating"><i class="fas fa-star"></i> @game.Rating?.ToString("0.0")</span><span>@(game.Price.HasValue ? "$" + game.Price.Value.ToString("0.00") : "ราคาไม่ระบุ")</span></div></div>

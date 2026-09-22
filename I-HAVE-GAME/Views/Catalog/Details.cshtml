@@ -1,5 +1,37 @@
 @model I_HAVE_GAME.Models.Game
 @{ ViewData["Title"] = Model.Title; }
+
 <a asp-action="Index" class="back-link"><i class="fas fa-arrow-left"></i> กลับไปแคตตาล็อก</a>
 @if (TempData["CatalogMessage"] is string message) { <div class="alert alert-success">@message</div> }
-<article class="game-detail"><div class="detail-cover">@if (!string.IsNullOrWhiteSpace(Model.ImageUrl)) { <img src="@Model.ImageUrl" alt="หน้าปก @Model.Title" /> } else { <i class="fas fa-gamepad"></i> }</div><div class="detail-content"><span class="eyebrow">@Model.Genres</span><h1>@Model.Title</h1><p class="detail-description">@Model.Description</p><dl><div><dt>คะแนน</dt><dd class="rating"><i class="fas fa-star"></i> @Model.Rating?.ToString("0.0") / 5</dd></div><div><dt>แพลตฟอร์ม</dt><dd>@Model.Platforms</dd></div><div><dt>วันวางจำหน่าย</dt><dd>@(Model.ReleaseDate?.ToString("d MMMM yyyy") ?? "ยังไม่ระบุ")</dd></div><div><dt>อัปเดตล่าสุด</dt><dd>@(Model.LastUpdatedAt?.ToString("d MMMM yyyy") ?? "ยังไม่มีข้อมูล")</dd></div><div><dt>ราคาอ้างอิง</dt><dd>@(Model.Price.HasValue ? "$" + Model.Price.Value.ToString("0.00") : "ราคาไม่ระบุ")</dd></div></dl><div class="detail-links"><a asp-controller="GameUpdates" asp-action="Index" asp-route-slug="@Model.Slug"><i class="fas fa-clipboard-list"></i> ดูประวัติอัปเดต</a><a asp-controller="GameUpdates" asp-action="Calendar"><i class="fas fa-calendar-days"></i> ปฏิทินวันวางขาย</a></div>@if (User.Identity?.IsAuthenticated == true) { <form asp-action="AddToLibrary" method="post" class="library-add-form">@Html.AntiForgeryToken()<input type="hidden" name="gameId" value="@Model.Id" /><select name="status" class="form-select"><option value="Wishlist">อยากเล่น (Wishlist)</option><option value="Backlog">รอเล่น (Backlog)</option><option value="Played">เล่นจบแล้ว (Played)</option></select><button class="btn btn-primary" type="submit">เพิ่มเข้าคลัง</button></form> } else { <a asp-controller="Account" asp-action="Register" class="btn btn-primary">สมัครสมาชิกเพื่อสร้างคลังเกม</a> }</div></article>
+
+<article class="game-detail game-detail-modern">
+    <div class="detail-cover">
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="หน้าปก @Model.Title" loading="eager" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+            <div class="cover-placeholder detail-placeholder" hidden><i class="fas fa-gamepad"></i><b>@Model.Title</b></div>
+        }
+        else
+        {
+            <div class="cover-placeholder detail-placeholder"><i class="fas fa-gamepad"></i><b>@Model.Title</b></div>
+        }
+        <div class="detail-cover-shade"></div>
+        <div class="detail-cover-title"><span class="eyebrow">@Model.Genres</span><h1>@Model.Title</h1></div>
+    </div>
+    <div class="detail-content">
+        <p class="detail-description">@Model.Description</p>
+        <dl>
+            <div><dt>คะแนน</dt><dd class="rating"><i class="fas fa-star"></i> @Model.Rating?.ToString("0.0") / 5</dd></div>
+            <div><dt>แพลตฟอร์ม</dt><dd>@Model.Platforms</dd></div>
+            <div><dt>วันวางจำหน่าย</dt><dd>@(Model.ReleaseDate?.ToString("d MMMM yyyy") ?? "ยังไม่ระบุ")</dd></div>
+            <div><dt>อัปเดตล่าสุด</dt><dd>@(Model.LastUpdatedAt?.ToString("d MMMM yyyy") ?? "ยังไม่มีข้อมูล")</dd></div>
+            <div><dt>ราคาอ้างอิง</dt><dd>@(Model.Price.HasValue ? "$" + Model.Price.Value.ToString("0.00") : "ราคาไม่ระบุ")</dd></div>
+        </dl>
+        <div class="detail-links"><a asp-controller="GameUpdates" asp-action="Index" asp-route-slug="@Model.Slug"><i class="fas fa-clipboard-list"></i> ดูประวัติอัปเดต</a><a asp-controller="GameUpdates" asp-action="Calendar"><i class="fas fa-calendar-days"></i> ปฏิทินวันวางขาย</a></div>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <form asp-action="AddToLibrary" method="post" class="library-add-form">@Html.AntiForgeryToken()<input type="hidden" name="gameId" value="@Model.Id" /><select name="status" class="form-select"><option value="Wishlist">อยากเล่น (Wishlist)</option><option value="Backlog">รอเล่น (Backlog)</option><option value="Played">เล่นจบแล้ว (Played)</option></select><button class="btn btn-primary" type="submit"><i class="fas fa-bookmark"></i> เพิ่มเข้าคลัง</button></form>
+        }
+        else { <a asp-controller="Account" asp-action="Register" class="btn btn-primary">สมัครสมาชิกเพื่อสร้างคลังเกม</a> }
+    </div>
+</article>

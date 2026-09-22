@@ -58,6 +58,7 @@ using (var scope = app.Services.CreateScope())
         dbContext.Database.Migrate();
 
         logger.LogInformation("Seeding database...");
+        DbSeeder.SeedDefaultAdmin(dbContext);
         DbSeeder.SeedQuizQuestions(dbContext);
         DbSeeder.SeedGames(dbContext);
         DbSeeder.SeedGameReleaseTimelines(dbContext);
@@ -104,5 +105,4 @@ app.MapControllerRoute(
 
 // Map Razor Pages
 app.MapRazorPages();
-
 app.Run();

@@ -1,7 +1,12 @@
 @model I_HAVE_GAME.Models.Game
 <a class="catalog-card game-card-rich" asp-controller="Catalog" asp-action="Details" asp-route-slug="@Model.Slug">
     <div class="game-cover">
-        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl)) { <img src="@Model.ImageUrl" alt="หน้าปก @Model.Title" /> } else { <i class="fas fa-gamepad"></i> }
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="หน้าปก @Model.Title" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+            <div class="cover-placeholder" hidden><i class="fas fa-gamepad"></i><b>@Model.Title</b></div>
+        }
+        else { <div class="cover-placeholder"><i class="fas fa-gamepad"></i><b>@Model.Title</b></div> }
         <span>@Model.Genres?.Split(',').FirstOrDefault()</span>
         <div class="game-hover"><strong>ดูเกมนี้</strong><small>@Model.Description</small><span class="game-update-chip"><i class="fas fa-clipboard-list"></i> มีไทม์ไลน์เกม</span></div>
     </div>

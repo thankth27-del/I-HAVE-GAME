@@ -1,9 +1,48 @@
 using I_HAVE_GAME.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace I_HAVE_GAME.Data
 {
     public static class DbSeeder
     {
+        /// <summary>
+        /// Creates the administrator account for a fresh database. The password is saved as
+        /// an ASP.NET Identity hash, never as plain text in SQLite.
+        /// </summary>
+        public static void SeedDefaultAdmin(AppDbContext context)
+        {
+            const string username = "Thank";
+            const string email = "thank.admin@i-have-game.local";
+            const string password = "123456";
+
+            var admin = context.Users.SingleOrDefault(user => user.Username == username);
+            if (admin is null)
+            {
+                admin = new User
+                {
+                    Username = username,
+                    Email = email,
+                    PasswordHash = string.Empty,
+                    Nickname = username,
+                    Role = "Admin",
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                admin.PasswordHash = new PasswordHasher<User>().HashPassword(admin, password);
+                context.Users.Add(admin);
+                context.SaveChanges();
+                return;
+            }
+
+            // An existing default account is always kept as an administrator, while its
+            // password and profile data remain untouched.
+            if (admin.Role != "Admin")
+            {
+                admin.Role = "Admin";
+                context.SaveChanges();
+            }
+        }
+
         public static void SeedQuizQuestions(AppDbContext context)
         {
             if (context.QuizQuestions.Any())

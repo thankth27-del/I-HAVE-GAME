@@ -87,7 +87,18 @@ public class SearchController : Controller
     }
 
     private static bool Contains(string? source, string? value) => !string.IsNullOrWhiteSpace(value) && value != "any" && !string.IsNullOrWhiteSpace(source) && source.Contains(value, StringComparison.OrdinalIgnoreCase);
-    private static GameResultViewModel Map(Game game) => new() { Id = game.Id, Slug = game.Slug ?? string.Empty, Name = game.Title, ReleasedDate = game.ReleaseDate?.ToString("d MMM yyyy"), Rating = (decimal)(game.Rating ?? 0), Genres = Split(game.Genres), Platforms = Split(game.Platforms), Description = game.Description };
+    private static GameResultViewModel Map(Game game) => new()
+    {
+        Id = game.Id,
+        Slug = game.Slug ?? string.Empty,
+        Name = game.Title,
+        BackgroundImage = game.ImageUrl,
+        ReleasedDate = game.ReleaseDate?.ToString("d MMM yyyy"),
+        Rating = (decimal)(game.Rating ?? 0),
+        Genres = Split(game.Genres),
+        Platforms = Split(game.Platforms),
+        Description = game.Description
+    };
     private static List<string> Split(string? text) => string.IsNullOrWhiteSpace(text) ? [] : text.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
 
     private async Task SaveHistory(GameSearchRequest request, int count)
